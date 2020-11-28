@@ -106,7 +106,7 @@ let Device = (parent) => {
             // refresh temperature
             this.element.temperature.forEach((temp, index) => {
                 temp.text.textContent = `Zone ${index+1}`;
-                temp.value.textContent = this.value.temperature[index];
+                temp.value.textContent = Math.round(this.value.temperature[index]);
             });
 
             // refresh digital

@@ -140,7 +140,7 @@ body {
 }
 
 .zone-value{
-    font-size: 1.3em;
+    font-size: 1.4em;
     background-color: var(--color-accent);
     border-radius: var(--small);
 }
