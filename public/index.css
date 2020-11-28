@@ -11,13 +11,13 @@
     --color-state-normal:hsl(123, 91%, 27%);
     --color-state-warning: hsl(46, 81%, 30%);
     --color-state-danger: hsl(0, 70%, 35%);
-    --small: .3em;
-    --normal: .5em;
-    --medium: .75em;
-    --large: 1em;
-    --xlarge: 1.5em;
+    --small: .2em;
+    --normal: .4em;
+    --medium: .6em;
+    --large: .8em;
+    --xlarge: 1em;
     --font-family-default: 'Lexend Deca', sans-serif;
-    --font-size-default: 16px;
+    --font-size-default: 20px;
     --device-name-font-size: 1.7em;
     --device-status-font-size: 1.1em;
 }
@@ -56,7 +56,7 @@ body {
 .device{
     background-color: var(--color-card-background);
     padding: var(--large);
-    min-width: 350px;
+    min-width: 400px;
     border-radius: var(--large);
     display: flex;
     flex-direction: column;
