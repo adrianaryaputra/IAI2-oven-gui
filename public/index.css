@@ -1,0 +1,154 @@
+@font-face {
+    font-family: 'Lexend Deca';
+    src: url('./font/LexendDeca-Regular.ttf');
+}
+
+:root {
+    --color-background: hsl(0, 0%, 0%);
+    --color-text-default: hsl(0, 0%, 90%);
+    --color-card-background: hsl(0, 0%, 10%);
+    --color-accent: hsl(210, 64%, 31%);
+    --color-state-normal:hsl(123, 91%, 27%);
+    --color-state-warning: hsl(46, 81%, 30%);
+    --color-state-danger: hsl(0, 70%, 35%);
+    --small: .3em;
+    --normal: .5em;
+    --medium: .75em;
+    --large: 1em;
+    --xlarge: 1.5em;
+    --font-family-default: 'Lexend Deca', sans-serif;
+    --font-size-default: 16px;
+    --device-name-font-size: 1.7em;
+    --device-status-font-size: 1.1em;
+}
+
+/* init */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-touch-callout: none; /* iOS Safari */
+    -webkit-user-select: none; /* Safari */
+    -khtml-user-select: none; /* Konqueror HTML */
+    -moz-user-select: none; /* Firefox */
+    -ms-user-select: none; /* Internet Explorer/Edge */
+    user-select: none; /* Non-prefixed version, currently
+                        supported by Chrome and Opera */
+}
+
+body {
+    background-color: var(--color-background);
+    color: var(--color-text-default);
+    font-family: var(--font-family-default);
+    font-size: var(--font-size-default);
+}
+
+.device-holder{
+    padding: var(--xlarge);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+    align-content: flex-start;
+    gap: var(--xlarge);
+}
+
+.device{
+    background-color: var(--color-card-background);
+    padding: var(--large);
+    min-width: 350px;
+    border-radius: var(--large);
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    align-content: flex-start;
+    flex-grow: 1;
+}
+
+.device-header{
+    padding-bottom: var(--medium);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: space-between;
+}
+
+.device-header .device-name{
+    font-size: var(--device-name-font-size);
+    margin: 0;
+    padding: 0;
+}
+
+.device-header .device-status{
+    font-size: var(--device-status-font-size);
+    padding: calc(
+        (
+            var(--device-name-font-size) - 
+            var(--device-status-font-size)
+        ) / 2
+    ) var(--medium);
+    border-radius: var(--small);
+}
+
+.device-header .right{
+    display: flex;
+    flex-direction: row;
+    gap: var(--medium);
+}
+
+.device-measurement{
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    align-content: stretch;
+    gap: var(--large);
+}
+
+.device-measurement > div{
+    display: flex;
+    flex-direction: column;
+    flex-wrap: nowrap;
+    flex-grow: 1;
+    justify-content: start;
+    align-content: stretch;
+    gap: var(--normal);
+}
+
+.device-measurement > div > div{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    /* padding: var(--medium); */
+    background-color: var(--color-background);
+    border-radius: var(--normal);
+    gap: var(--medium);
+}
+
+.device-measurement > div > div > *{
+    padding: var(--normal);
+}
+
+.zone-value{
+    background-color: var(--color-accent);
+    border-radius: var(--small);
+}
+
+.zone-value::after{
+    content: '°C';
+}
+
+.digital-status-value{
+    border-radius: var(--small);
+}
+
+.color-state-normal{
+    background-color: var(--color-state-normal) !important;
+}
+
+.color-state-warning{
+    background-color: var(--color-state-warning) !important;
+}
+
+.color-state-danger{
+    background-color: var(--color-state-danger) !important;
+}
