@@ -50,7 +50,7 @@ body {
     flex-wrap: wrap;
     justify-content: flex-start;
     align-content: flex-start;
-    gap: var(--xlarge);
+    grid-gap: var(--xlarge);
 }
 
 .device{
@@ -93,7 +93,7 @@ body {
 .device-header .right{
     display: flex;
     flex-direction: row;
-    gap: var(--medium);
+    grid-gap: var(--medium);
 }
 
 .device-measurement{
@@ -101,7 +101,7 @@ body {
     flex-direction: row;
     flex-wrap: nowrap;
     align-content: stretch;
-    gap: var(--large);
+    grid-gap: var(--large);
 }
 
 .device-measurement > div{
@@ -111,7 +111,7 @@ body {
     flex-grow: 1;
     justify-content: start;
     align-content: stretch;
-    gap: var(--normal);
+    grid-gap: var(--normal);
 }
 
 .device-measurement > div > div{
@@ -121,7 +121,7 @@ body {
     /* padding: var(--medium); */
     background-color: var(--color-background);
     border-radius: var(--normal);
-    gap: var(--medium);
+    grid-gap: var(--medium);
 }
 
 .device-measurement > div > div > *{
