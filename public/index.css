@@ -71,6 +71,50 @@ body {
     transition: .3s;
 }
 
+.additional-holder{
+    margin: auto;
+    display: flex;
+    gap: var(--large);
+}
+
+.additional-holder > h3 {
+    margin: auto;
+}
+
+.additional-holder > svg {
+    width: 2em;
+    height: 2em;
+    fill: var(--color-text-default);
+}
+
+.plus-symbol{
+    position: relative;
+    width: 2em;
+    height: 2em;
+}
+
+.plus-symbol::after{
+    content: '';
+    position: absolute;
+    left: 40%;
+    top: 5%;
+    width: 20%;
+    height: 90%;
+    background-color: var(--color-text-default);
+    border-radius: .2em;
+}
+
+.plus-symbol::before{
+    content: '';
+    position: absolute;
+    top: 40%;
+    left: 5%;
+    width: 90%;
+    height: 20%;
+    background-color: var(--color-text-default);
+    border-radius: .2em;
+}
+
 .device-header{
     padding-bottom: var(--medium);
     display: flex;
