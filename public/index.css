@@ -63,6 +63,12 @@ body {
     justify-content: space-between;
     align-content: flex-start;
     flex-grow: 1;
+    transition: .3s;
+}
+
+.device:hover{
+    box-shadow: 0 0 10px #666;
+    transition: .3s;
 }
 
 .device-header{
