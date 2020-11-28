@@ -8,8 +8,6 @@ services:
     build: .
     ports:
       - '5000:80'
-    links: 
-      - mongo
     environment: 
       - PORT=5000
   
