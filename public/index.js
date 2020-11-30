@@ -6,6 +6,36 @@ let UPDATE_INTERVAL = 10000 //ms
 
 let CLASS_DEVICE_HOLDER = '.device-holder'
 
+
+class EventEmitter {
+    constructor() {
+        this.events = {};
+    }
+    
+    emit(eventName, data) {
+        const event = this.events[eventName];
+        if( event ) {
+            event.forEach(fn => {
+                fn.call(null, data);
+            });
+        }
+    }
+    
+    subscribe(eventName, fn) {
+        if(!this.events[eventName]) {
+            this.events[eventName] = [];
+        }
+        
+        this.events[eventName].push(fn);
+        return () => {
+            this.events[eventName] = this.events[eventName].filter(eventFn => fn !== eventFn);
+        }
+    }
+}
+
+let Emitter = new EventEmitter();
+
+
 let Device = (parent) => {
     return {
 
@@ -29,7 +59,7 @@ let Device = (parent) => {
                 ['color-state-danger', 'color-state-normal'],
                 ['color-state-danger', 'color-state-normal'],
                 ['color-state-danger', 'color-state-normal'],
-                ['color-state-warning', 'color-state-normal'],
+                ['color-state-danger', 'color-state-normal'],
             ]
         },
 
@@ -211,39 +241,56 @@ let Devices = {
     fetchResult : null,
     deviceFetchList : Object(),
     deviceObjList : Object(),
-    deviceParentElement : null, 
+    deviceParentElement : null,
 
-    async update() {
+    init() {
 
-        await this._fetchData();
-        this._parseFetch();
+        Emitter.subscribe('event:fetch-success', () => {
 
-        // add new and update data
-        for (const key in this.deviceFetchList) {
-            if (this.deviceObjList.hasOwnProperty(key)) {
-                this.deviceObjList[key].update(this.deviceFetchList[key]);
-            } else {
-                this.deviceObjList[key] = Device(this.deviceParentElement).init(this.deviceFetchList[key]);
+            this._parseFetch();
+    
+            // add new and update data
+            for (const key in this.deviceFetchList) {
+                if (this.deviceObjList.hasOwnProperty(key)) {
+                    this.deviceObjList[key].update(this.deviceFetchList[key]);
+                } else {
+                    this.deviceObjList[key] = Device(this.deviceParentElement).init(this.deviceFetchList[key]);
+                }
             }
-        }
-
-        // remove unused device
-        for (const key in this.deviceObjList) {
-            if(!this.deviceFetchList.hasOwnProperty(key)) {
-                this.deviceObjList[key].selfRemove();
+    
+            // remove unused device
+            for (const key in this.deviceObjList) {
+                if(!this.deviceFetchList.hasOwnProperty(key)) {
+                    this.deviceObjList[key].selfRemove();
+                    delete this.deviceObjList[key];
+                }
             }
-        }
+    
+        });
 
     },
 
-    async _fetchData() {
+    update() {
+        this.fetchData();
+    },
 
-        const response = await fetch(API_LINK + '/device');
+    async fetchData() {
 
-        if(response.ok) {
-            this.fetchResult = await response.json();
-        } else {
-            alert("HTTP ERROR :" + response.status);
+        try {
+
+            const response = await fetch(API_LINK + '/device');
+        
+            if(response.ok) {
+                this.fetchResult = await response.json();
+                Emitter.emit('event:fetch-success');
+            } else {
+                Emitter.emit('error:response-status', response.status);
+            }
+
+        } catch (err) {
+
+            Emitter.emit('error:fetch-data');
+
         }
 
     },
@@ -274,6 +321,7 @@ let addDeviceButton = (parent) => {
 
     const card = document.createElement("section");
     card.classList.add("device");
+    card.classList.add("addition");
     card.innerHTML = `
     <div class="additional-holder">
         <div class="plus-symbol"></div>
@@ -290,6 +338,7 @@ let configurationButton = (parent) => {
 
     const card = document.createElement("section");
     card.classList.add("device");
+    card.classList.add("addition");
     card.innerHTML = `
     <div class="additional-holder">
         <svg viewBox="0 0 426.667 426.667">
@@ -317,11 +366,32 @@ let configurationButton = (parent) => {
 }
 
 
+
 document.addEventListener("DOMContentLoaded", async () => {
+
+
+    errorViewer = document.querySelector('.error-viewer');
+    errorViewerText = errorViewer.querySelector('.error-text');
+
+    // error viewer
+    Emitter.subscribe('error:fetch-data', () => {
+        errorViewerText.textContent = "You are Offline! Please check your network connection."
+        errorViewer.classList.remove('hidden');
+    });
+    Emitter.subscribe('error:response-status', () => {
+        errorViewerText.textContent = "Error: Invalid response from server"
+        errorViewer.classList.remove('hidden');
+    });
+    Emitter.subscribe('event:fetch-success', () => {
+        errorViewer.classList.add('hidden');
+    });
+
 
     const deviceHolder = document.querySelector(CLASS_DEVICE_HOLDER);
     Devices.deviceParentElement = deviceHolder;
-    await Devices.update();
+
+    Devices.init();
+    Devices.update();
 
     addDeviceButton(deviceHolder);
     configurationButton(deviceHolder);

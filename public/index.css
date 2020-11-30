@@ -22,6 +22,27 @@
     --device-status-font-size: 1.1em;
 }
 
+.color-state-normal{
+    background-color: var(--color-state-normal) !important;
+}
+
+.color-state-warning{
+    background-color: var(--color-state-warning) !important;
+}
+
+.color-state-danger{
+    background-color: var(--color-state-danger) !important;
+}
+
+.addition{
+    order: 9999;
+}
+
+.hidden{
+    display: none !important;
+    transition: 1s;
+}
+
 /* init */
 * {
     margin: 0;
@@ -44,7 +65,7 @@ body {
 }
 
 .device-holder{
-    padding: var(--xlarge);
+    margin: var(--xlarge);
     display: flex;
     flex-direction: row;
     flex-wrap: wrap;
@@ -203,14 +224,26 @@ body {
     border-radius: var(--small);
 }
 
-.color-state-normal{
-    background-color: var(--color-state-normal) !important;
+.error-viewer{
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: var(--color-state-danger);
+    margin: var(--xlarge);
+    padding: var(--xlarge);
+    border-radius: var(--large);
+    display: flex;
+    justify-content: space-between;
+    box-shadow: 0 0 var(--xlarge) var(--color-background);
 }
 
-.color-state-warning{
-    background-color: var(--color-state-warning) !important;
+.error-viewer > h3 {
+    font-size: 1em;
 }
 
-.color-state-danger{
-    background-color: var(--color-state-danger) !important;
+.error-viewer > .plus-symbol {
+    height: 1.2em;
+    width: 1.2em;
+    transform: rotate(45deg);
 }
