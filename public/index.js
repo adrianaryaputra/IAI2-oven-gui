@@ -344,9 +344,6 @@ document.addEventListener("DOMContentLoaded", async () => {
     Devices.init();
     Devices.update();
 
-    addDeviceButton(deviceHolder);
-    configurationButton(deviceHolder);
-
     setInterval(() => {
         Devices.update();
     }, UPDATE_INTERVAL);
