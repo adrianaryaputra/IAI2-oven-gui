@@ -161,6 +161,10 @@
     content: '°C';
 }
 
+.digital-status-text{
+    margin: auto 0;
+}
+
 .digital-status-value{
     border-radius: var(--small);
 }
