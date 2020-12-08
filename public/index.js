@@ -101,7 +101,11 @@ let Device = (parent) => {
             if(data.name) this.value.name = data.name;
 
             if(data.temperature) data.temperature.forEach((t,idx) => {
-                this.value.temperature[idx] = t>=999?NaN:t;
+                if(t>=999 || t<10){
+                    this.value.temperature[idx] = NaN;
+                } else {
+                    this.value.temperature[idx] = t;
+                }
             });
 
             if(data.digital) data.digital.forEach((d, idx) => {
@@ -137,7 +141,7 @@ let Device = (parent) => {
             this.element.temperature.forEach((temp, index) => {
                 temp.text.textContent = `Zone ${index+1}`;
                 if(isNaN(this.value.temperature[index])){
-                    temp.value.textContent = "Err"    
+                    temp.value.textContent = "Err" 
                 }
                 else {
                     temp.value.textContent = Math.round(this.value.temperature[index]);
