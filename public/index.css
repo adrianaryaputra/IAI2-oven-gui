@@ -11,7 +11,7 @@
 .device{
     background-color: var(--color-card-background);
     padding: var(--large);
-    width: 400px;
+    width: 450px;
     border-radius: var(--large);
     display: flex;
     flex-direction: column;
