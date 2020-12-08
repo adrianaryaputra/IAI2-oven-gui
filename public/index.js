@@ -95,7 +95,6 @@ let Device = (parent) => {
 
 
         _pushData(data){
-
             if(data.id) this.id = data.id;
 
             if(data.name) this.value.name = data.name;
@@ -114,9 +113,10 @@ let Device = (parent) => {
 
             // check if sensor alive from timestamp
             if(data.timestamp) {
-                const currDate = new Date(data.timestamp);
+                const dataDate = Date.parse(data.timestamp);
+                const serverTime = Date.parse(data.server_time);
                 this.value.status = !( 
-                    Date.now() - currDate.getTime() > DEVICE_TIMEOUT
+                    serverTime - dataDate > DEVICE_TIMEOUT
                 );
             }
         },
@@ -318,6 +318,7 @@ let Devices = {
             this.fetchResult.payload.forEach(p => {
                 this.deviceFetchList[p._id] = Object();
                 
+                if(this.fetchResult.server_time) this.deviceFetchList[p._id].server_time = this.fetchResult.server_time;
                 if(p._id) this.deviceFetchList[p._id].id = p._id;
                 if(p.name) this.deviceFetchList[p._id].name = p.name;
                 if(p.mac_address) this.deviceFetchList[p._id].mac_address = p.mac_address;
