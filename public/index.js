@@ -188,6 +188,10 @@ let Device = (parent) => {
             this.element.card.appendChild(header);
             this.element.card.appendChild(measurement);
 
+            this.element.card.addEventListener("click", () => {
+                document.location.href = '/scaler.html?id=' + this.id;
+            });
+
         },
 
 
