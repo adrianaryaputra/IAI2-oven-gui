@@ -19,6 +19,7 @@
     align-content: flex-start;
     flex-grow: 1;
     transition: .3s;
+    overflow: hidden;
 }
 
 .device:hover{
@@ -130,10 +131,10 @@
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    /* padding: var(--medium); */
     background-color: var(--color-background);
     border-radius: var(--normal);
     grid-gap: var(--medium);
+    flex-grow: 1;
 }
 
 .device-measurement > div > div > *{
@@ -150,12 +151,24 @@
     border-radius: var(--small);
 }
 
-.zone-value::after{
+.zone-value > *{
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
+}
+
+.zone-value > *::after{
     content: '°C';
 }
 
 .digital-status-value{
     border-radius: var(--small);
+}
+
+.digital-status-value > *{
+    position: relative;
+    top: 50%;
+    transform: translateY(-50%);
 }
 
 .error-viewer{

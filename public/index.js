@@ -42,9 +42,9 @@ let Device = (parent) => {
         id: -1,
 
         value: {
-            name: 'OV????',
+            name: 'OV10XX',
             status: false,
-            temperature: [0, 0, 0],
+            temperature: [NaN, NaN, NaN],
             digital: [0, 0, 0, 0, 0],
             digitalName: ['Fan 1', 'Fan 2', 'Fan 3', 'Exhaust', 'Alarm'],
             digitalState: [
@@ -101,7 +101,7 @@ let Device = (parent) => {
             if(data.name) this.value.name = data.name;
 
             if(data.temperature) data.temperature.forEach((t,idx) => {
-                this.value.temperature[idx] = t;
+                this.value.temperature[idx] = t>=999?NaN:t;
             });
 
             if(data.digital) data.digital.forEach((d, idx) => {
@@ -136,7 +136,12 @@ let Device = (parent) => {
             // refresh temperature
             this.element.temperature.forEach((temp, index) => {
                 temp.text.textContent = `Zone ${index+1}`;
-                temp.value.textContent = Math.round(this.value.temperature[index]);
+                if(isNaN(this.value.temperature[index])){
+                    temp.value.textContent = "Err"    
+                }
+                else {
+                    temp.value.textContent = Math.round(this.value.temperature[index]);
+                }
             });
 
             // refresh digital
@@ -144,8 +149,8 @@ let Device = (parent) => {
                 digit.text.textContent = this.value.digitalName[index];
                 const digival = this.value.digital[index];
                 digit.value.textContent = this.value.digitalState[index][digival];
-                digit.value.classList.remove(this.value.digitalColor[index][(digival+1)%2]);
-                digit.value.classList.add(this.value.digitalColor[index][digival]);
+                digit.value.parentElement.classList.remove(this.value.digitalColor[index][(digival+1)%2]);
+                digit.value.parentElement.classList.add(this.value.digitalColor[index][digival]);
             });
         },
 
@@ -201,11 +206,13 @@ let Device = (parent) => {
             zone.classList.add("zone");
             const zoneText = document.createElement("h4");
             zoneText.classList.add("zone-text");
+            const zoneValueHolder = document.createElement("div");
             const zoneValue = document.createElement("h4");
-            zoneValue.classList.add("zone-value");
+            zoneValueHolder.classList.add("zone-value");
+            zoneValueHolder.appendChild(zoneValue);
 
             zone.appendChild(zoneText);
-            zone.appendChild(zoneValue);
+            zone.appendChild(zoneValueHolder);
 
             return {
                 zone: zone,
@@ -222,11 +229,13 @@ let Device = (parent) => {
             digitalStatus.classList.add("digital-status");
             const digitalStatusText = document.createElement("h4");
             digitalStatusText.classList.add("digital-status-text");
+            const digitalStatusValueHolder = document.createElement("div");
             const digitalStatusValue = document.createElement("h4");
-            digitalStatusValue.classList.add("digital-status-value");
+            digitalStatusValueHolder.classList.add("digital-status-value");
+            digitalStatusValueHolder.appendChild(digitalStatusValue);
 
             digitalStatus.appendChild(digitalStatusText);
-            digitalStatus.appendChild(digitalStatusValue);
+            digitalStatus.appendChild(digitalStatusValueHolder);
 
             return {
                 digitalStatus: digitalStatus,
