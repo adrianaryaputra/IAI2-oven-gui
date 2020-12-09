@@ -271,13 +271,13 @@ let ScalerHolder = {
             config: {
                 class: 'back-to-device',
                 text: 'ᐊ Back to Device',
-                callback: () => {
+                callback: async () => {
 
                     let result = {
                         mac_address: APIConnector.macAddress,
                         scaler:{
-                            gain: APIConnector.oldScale.gain[nT],
-                            shift: APIConnector.oldScale.shift[nT],
+                            gain: APIConnector.oldScale.gain,
+                            shift: APIConnector.oldScale.shift,
                         },
                         refresh_time: 60
                     }
