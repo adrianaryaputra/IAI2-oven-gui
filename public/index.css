@@ -1,4 +1,4 @@
-.device-holder{
+/* .device-holder{
     margin: var(--xlarge);
     display: flex;
     flex-direction: row;
@@ -6,12 +6,19 @@
     justify-content: flex-start;
     align-content: flex-start;
     grid-gap: var(--xlarge);
+} */
+
+.device-holder{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(450px, 1fr));
+    gap: var(--xlarge);
+    margin: var(--xlarge);
 }
 
 .device{
     background-color: var(--color-card-background);
     padding: var(--large);
-    width: 450px;
+    /* width: 450px; */
     border-radius: var(--large);
     display: flex;
     flex-direction: column;
