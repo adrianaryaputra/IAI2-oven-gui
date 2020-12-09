@@ -60,6 +60,21 @@
     text-align: center;
 }
 
+.temp-card > .temp-multi{
+    font-size: 1.7em;
+    text-align: left;
+}
+
+.temp-card > .temp-multi:first-child::before{
+    content: 'thermocontroller : ';
+    font-weight: lighter;
+}
+
+.temp-card > .temp-multi:last-child::before{
+    content: 'measurement : ';
+    font-weight: lighter;
+}
+
 .temp-card h3::after{
     content: '°C';
 }

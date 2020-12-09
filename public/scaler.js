@@ -71,24 +71,29 @@ LoadingScreen = {
 
 class TemperatureCard{
 
-    constructor(parent){
+    constructor(parent, isEditable = false){
         this.parent = parent;
-        this.value = null;
+        this.measurement = null;
+        this.editable = isEditable;
         this.elem = new Object();
         this._generateHTML();
     }
 
-    set(value){
-        this.value = parseFloat(value);
-        if(isNaN(this.value)){
-            this.elem.value.textContent = '---';
+    set(measurement){
+        this.value = parseFloat(measurement);
+        if(isNaN(this.measurement)){
+            this.elem.measurement.textContent = '---';
         } else {
-            this.elem.value.textContent = this.value;
+            this.elem.measurement.textContent = this.value;
         }
     }
 
     get(){
         return this.value;
+    }
+
+    getRef(){
+        return this.elem.reference.textContent;
     }
 
     element(){
@@ -98,9 +103,21 @@ class TemperatureCard{
     _generateHTML(){
         this.elem.card = document.createElement("div");
         this.elem.card.classList.add("temp-card");
-        this.elem.value = document.createElement("h3");
+
+        this.elem.reference = document.createElement("h3");
+        this.elem.reference.contentEditable = true;
+        this.elem.reference.textContent = '0';
+
+        this.elem.measurement = document.createElement("h3");
         this.set(NaN);
-        this.elem.card.appendChild(this.elem.value);
+        
+        if(this.editable){
+            this.elem.card.appendChild(this.elem.reference);
+            this.elem.measurement.classList.add('temp-multi');
+            this.elem.reference.classList.add('temp-multi');
+        }
+
+        this.elem.card.appendChild(this.elem.measurement);
         this.parent.appendChild(this.elem.card);
     }
 
@@ -164,11 +181,14 @@ class TemperatureViewer{
         parent, 
         numberOfCard, 
         title, 
-        button = []
+        button = [],
+        isEditable = false,
     }){
+        this.isEditable = isEditable;
         this.parent = parent;
         this.title = title;
         this.temperatureCard = new Array(numberOfCard);
+        this.editableCard = new Array(numberOfCard);
         this.arrayValue = null;
         this.elem = new Object();
         this.buttonConfig = button;
@@ -189,6 +209,10 @@ class TemperatureViewer{
         return this.temperatureCard.map((temp) => parseFloat(temp.get()));
     }
 
+    getRefTemp(){
+        return this.temperatureCard.map((temp) => parseFloat(temp.getRef()));
+    }
+
     element(){
         return this.elem.holder;
     }
@@ -203,7 +227,7 @@ class TemperatureViewer{
         this.elem.tempHolder.classList.add("temp-card-holder");
         this._generateTempCard();
         this.elem.holder.appendChild(this.elem.tempHolder);
-        let buttonGroup = new ButtonGroup({
+        new ButtonGroup({
             buttonConfigList: this.buttonConfig,
             parent: this.element(),
         })
@@ -212,7 +236,7 @@ class TemperatureViewer{
 
     _generateTempCard(){
         for (let nCard = 0; nCard < this.temperatureCard.length; nCard++) {
-            this.temperatureCard[nCard] = new TemperatureCard(this.elem.tempHolder);
+            this.temperatureCard[nCard] = new TemperatureCard(this.elem.tempHolder, this.isEditable);
         }
     }
 
@@ -223,8 +247,8 @@ let ScalerHolder = {
 
     elem: new Object(),
     tempCurrent: null,
-    tempAt50: null,
-    tempAt250: null,
+    tempAtLow: null,
+    tempAtHigh: null,
 
     element(){
         return this.elem.holder;
@@ -248,6 +272,19 @@ let ScalerHolder = {
                 class: 'back-to-device',
                 text: 'ᐊ Back to Device',
                 callback: () => {
+
+                    let result = {
+                        mac_address: APIConnector.macAddress,
+                        scaler:{
+                            gain: APIConnector.oldScale.gain[nT],
+                            shift: APIConnector.oldScale.shift[nT],
+                        },
+                        refresh_time: 60
+                    }
+
+                    console.log(result);
+                    await APIConnector.update(result);
+
                     returnHome();
                 }
             },
@@ -265,53 +302,59 @@ let ScalerHolder = {
             title: "Current Temperature",
         });
 
-        this.tempAt50 = new TemperatureViewer({
+        this.tempAtLow = new TemperatureViewer({
             parent: this.element(),
             numberOfCard: 3,
-            title: "Temperature at 50°C",
+            title: "Temperature scale Low",
+            isEditable: true,
             button: [
                 {
                     class: 'color-state-normal',
                     text: 'SET current temperature',
                     callback: () => {
                         let currTemp = this.tempCurrent.getTemp();
-                        this.tempAt50.setTemp(currTemp);
+                        this.tempAtLow.setTemp(currTemp);
                     },
                 },
                 {
                     class: 'color-state-danger',
-                    text: 'RESET to 50°C',
+                    text: 'RESET to reference',
                     callback: () => {
-                        this.tempAt50.setTemp([50, 50, 50]);
+                        let refTempLow = this.tempAtLow.getRefTemp();
+                        this.tempAtLow.setTemp(refTempLow);
                     },
                 }
             ],
         });
-        this.tempAt50.setTemp([50, 50, 50]);
+        let refTempLow = this.tempAtLow.getRefTemp();
+        this.tempAtLow.setTemp(refTempLow);
 
-        this.tempAt250 = new TemperatureViewer({
+        this.tempAtHigh = new TemperatureViewer({
             parent: this.element(),
             numberOfCard: 3,
-            title: "Temperature at 250°C",
+            title: "Temperature scale High",
+            isEditable: true,
             button: [
                 {
                     class: 'color-state-normal',
                     text: 'SET current temperature',
                     callback: () => {
                         let currTemp = this.tempCurrent.getTemp();
-                        this.tempAt250.setTemp(currTemp);
+                        this.tempAtHigh.setTemp(currTemp);
                     },
                 },
                 {
                     class: 'color-state-danger',
-                    text: 'RESET to 250°C',
+                    text: 'RESET to reference',
                     callback: () => {
-                        this.tempAt250.setTemp([250, 250, 250]);
+                        let refTempHigh = this.tempAtHigh.getRefTemp();
+                        this.tempAtHigh.setTemp(refTempHigh);
                     },
                 }
             ],
         });
-        this.tempAt250.setTemp([250, 250, 250]);
+        let refTempHigh = this.tempAtHigh.getRefTemp();
+        this.tempAtHigh.setTemp(refTempHigh);
 
         this.submitButton = new ButtonGroup({
             buttonConfigList: [
@@ -325,8 +368,10 @@ let ScalerHolder = {
                         });
                         LoadingScreen.show();
 
-                        let tInLow = this.tempAt50.getTemp();
-                        let tInHigh = this.tempAt250.getTemp();
+                        let tInLow = this.tempAtLow.getTemp();
+                        let tInHigh = this.tempAtHigh.getTemp();
+                        let tOutLow = this.tempAtLow.getRefTemp();
+                        let tOutHigh = this.tempAtHigh.getRefTemp();
                         let tLength = Math.min(
                             tInLow.length,
                             tInHigh.length 
@@ -337,8 +382,8 @@ let ScalerHolder = {
                             tResult[nT] = calculateGainShift({
                                 tempInLow: tInLow[nT],
                                 tempInHigh: tInHigh[nT],
-                                tempOutLow: 50,
-                                tempOutHigh: 250,
+                                tempOutLow: tOutLow[nT],
+                                tempOutHigh: tOutHigh[nT],
                                 oldGain: APIConnector.oldScale.gain[nT],
                                 oldShift: APIConnector.oldScale.shift[nT]
                             })
