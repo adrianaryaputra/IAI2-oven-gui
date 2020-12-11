@@ -161,12 +161,12 @@ VisualizerElement = {
         // create blower chart
         this.digitalChart = new DataChart({
             parent: this.element(),
-            height: '170px',
+            height: '200px',
             canvasConfig: {
                 type: 'line',
                 data:{
                     xLabels: [],
-                    yLabels: ['Fan1', 'Fan2', 'Fan3', 'Exhaust', 'Status', 'OFF'],
+                    yLabels: ['Fan1', 'Fan2', 'Fan3', 'Exhaust', 'Status', 'OFF', ''],
                     datasets: [{
                         label: 'Fan 1',
                         borderColor: 'rgba(0,0,0,1)',
