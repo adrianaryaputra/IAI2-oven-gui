@@ -150,7 +150,7 @@ VisualizerElement = {
                             },
                             ticks: {
                                 beginAtZero: true,
-                                max: 400
+                                max: 350
                             }
                         }]
                     },
