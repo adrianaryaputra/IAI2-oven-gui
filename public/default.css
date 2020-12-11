@@ -68,6 +68,7 @@ body {
     width: 100vw;
     height: 100vh;
     position: fixed;
+    z-index: 999;
     background-color: hsla(0, 0%, 10%, 0.95);
 }
 

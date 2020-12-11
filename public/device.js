@@ -51,19 +51,6 @@ VisualizerElement = {
         this.elem.holder = document.createElement('section');
         this.elem.holder.classList.add('visualizer-holder');
 
-        // create back button
-        this.elem.backBtn = new ClickableButton({
-            config: {
-                class: 'back-to-dashboard',
-                text: 'ᐊ Back to Dashboard',
-                callback: () => {
-                    location.search = '';
-                    location.pathname = '/';
-                }
-            },
-            parent: this.element()
-        });
-
         // create setting button
         this.elem.scaleBtn = new ClickableButton({
             config: {
@@ -92,6 +79,19 @@ VisualizerElement = {
                 </g>
             </g>
         </svg>`
+
+        // create back button
+        this.elem.backBtn = new ClickableButton({
+            config: {
+                class: 'back-to-dashboard',
+                text: 'ᐊ Back to Dashboard',
+                callback: () => {
+                    location.search = '';
+                    location.pathname = '/';
+                }
+            },
+            parent: this.element()
+        });
 
         // create Device Name holder
         this.elem.nameText = document.createElement('h2');
