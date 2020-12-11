@@ -141,7 +141,6 @@ VisualizerElement = {
                         intersect: false,
                         callbacks: {
                             title: (tooltipItem, data) => {
-                                console.log(data)
                                 let tstamp = data.labels[tooltipItem[0].index];
                                 return new Date(tstamp).toLocaleString('id-ID');
                             }
