@@ -138,7 +138,14 @@ VisualizerElement = {
                     maintainAspectRatio: false,
                     tooltips: {
                         mode: 'index',
-                        intersect: false
+                        intersect: false,
+                        callbacks: {
+                            title: (tooltipItem, data) => {
+                                console.log(data)
+                                let tstamp = data.labels[tooltipItem[0].index];
+                                return new Date(tstamp).toLocaleString('id-ID');
+                            }
+                        }
                     },
                     scales: {
                         xAxes: [{
@@ -250,7 +257,8 @@ VisualizerElement = {
                         intersect: false,
                         callbacks: {
                             title: (tooltipItem, data) => {
-                                return data.xLabels[tooltipItem[0].index]
+                                let tstamp = data.xLabels[tooltipItem[0].index];
+                                return new Date(tstamp).toLocaleString('id-ID');
                             },
                             label: (tooltipItem, data) => {
                                 var label = data.datasets[tooltipItem.datasetIndex].label || '';
