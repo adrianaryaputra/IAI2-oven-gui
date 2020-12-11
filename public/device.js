@@ -17,13 +17,14 @@ VisualizerElement = {
     },
 
     updateTemperature({timestamp, data, every=60}){
-
-        this.temperatureChart.update({
-            labels: timestamp.filter((_,i) => {return i % every === 0}),
-            datasets: data.map((d,idx) => {
-                return d.filter((_,i) => {return i % every === 0});
-            })
-        })
+        if(data){
+            this.temperatureChart.update({
+                labels: timestamp.filter((_,i) => {return i % every === 0}),
+                datasets: data.map((d,idx) => {
+                    return d.filter((_,i) => {return i % every === 0});
+                })
+            });
+        }
     },
 
     updateDigital({timestamp, data, every=60}){
@@ -35,13 +36,14 @@ VisualizerElement = {
                     else return 'OFF';
                 })
             });
+
+            this.digitalChart.update({
+                xLabels: timestamp.filter((_,i) => {return i % every === 0}),
+                datasets: data.map((d,idx) => {
+                    return d.filter((_,i) => {return i % every === 0});
+                })
+            });
         }
-        this.digitalChart.update({
-            xLabels: timestamp.filter((_,i) => {return i % every === 0}),
-            datasets: data.map((d,idx) => {
-                return d.filter((_,i) => {return i % every === 0});
-            })
-        })
     },
 
     _createHTML(){
@@ -55,11 +57,41 @@ VisualizerElement = {
                 class: 'back-to-dashboard',
                 text: 'ᐊ Back to Dashboard',
                 callback: () => {
+                    location.search = '';
                     location.pathname = '/';
                 }
             },
             parent: this.element()
-        })
+        });
+
+        // create setting button
+        this.elem.scaleBtn = new ClickableButton({
+            config: {
+                class: 'button-rescale',
+                text: '',
+                callback: () => {
+                    location.pathname = '/scaler.html'
+                }
+            },
+            parent: this.element()
+        });
+        this.elem.scaleBtn.element().innerHTML = 
+        `<svg viewBox="0 0 426.667 426.667">
+            <g>
+                <g>
+                    <path d="M416.8,269.44l-45.013-35.307c0.853-6.827,1.493-13.76,1.493-20.8s-0.64-13.973-1.493-20.8l45.12-35.307
+                        c4.053-3.2,5.227-8.96,2.56-13.653L376.8,69.653c-2.667-4.587-8.213-6.507-13.013-4.587l-53.12,21.44
+                        c-10.987-8.427-23.04-15.573-36.053-21.013l-8-56.533C265.653,3.947,261.28,0,255.947,0h-85.333c-5.333,0-9.707,3.947-10.56,8.96
+                        l-8,56.533c-13.013,5.44-25.067,12.48-36.053,21.013l-53.12-21.44c-4.8-1.813-10.347,0-13.013,4.587L7.2,143.573
+                        c-2.667,4.587-1.493,10.347,2.56,13.653l45.013,35.307c-0.853,6.827-1.493,13.76-1.493,20.8s0.64,13.973,1.493,20.8L9.76,269.44
+                        c-4.053,3.2-5.227,8.96-2.56,13.653l42.667,73.92c2.667,4.587,8.213,6.507,13.013,4.587L116,340.16
+                        c10.987,8.427,23.04,15.573,36.053,21.013l8,56.533c0.853,5.013,5.227,8.96,10.56,8.96h85.333c5.333,0,9.707-3.947,10.56-8.96
+                        l8-56.533c13.013-5.44,25.067-12.48,36.053-21.013l53.12,21.44c4.8,1.813,10.347,0,13.013-4.587l42.667-73.92
+                        C422.027,278.507,420.853,272.747,416.8,269.44z M213.28,288c-41.28,0-74.667-33.387-74.667-74.667S172,138.667,213.28,138.667
+                        s74.667,33.387,74.667,74.667S254.56,288,213.28,288z"/>
+                </g>
+            </g>
+        </svg>`
 
         // create Device Name holder
         this.elem.nameText = document.createElement('h2');

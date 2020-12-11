@@ -19,3 +19,15 @@
     text-align: center;
     margin: -20px auto 0 auto;
 }
+
+.button-rescale{
+    position: absolute;
+    top: var(--xlarge);
+    right: var(--xlarge);
+}
+
+.button-rescale > svg {
+    width: 1.5em;
+    height: 1.5em;
+    fill: var(--color-text-default);
+}
