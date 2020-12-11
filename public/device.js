@@ -377,8 +377,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     // initialize everything
     loadingScreen = new LoadingScreen(document.body);
     VisualizerElement.init(document.body);
-    VisualizerElement.setDeviceName(deviceData.name);
-    
+
     // set loading screen
     loadingScreen.set({
         title: "Obtaining Data",
@@ -392,6 +391,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     // get device info
     let deviceData = await fetchDeviceData(urlParamsId);
+    VisualizerElement.setDeviceName(deviceData.name);
 
     // get temperature data
     let measurementData = await fetchMeasurementData({
