@@ -1,0 +1,21 @@
+.visualizer-holder{
+    background-image: linear-gradient(
+        var(--color-accent) calc(100% - 7em),
+        rgba(0,0,0,0)
+    );
+    /* background-color: var(--color-accent); */
+    padding: var(--xlarge);
+    padding-bottom: 5em;
+    display: flex;
+    flex-direction: column;
+}
+
+.back-to-dashboard{
+    width: fit-content;
+}
+
+.name-text{
+    font-size: 3em;
+    text-align: center;
+    margin: -20px auto 0 auto;
+}

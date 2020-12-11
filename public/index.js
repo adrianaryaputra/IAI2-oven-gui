@@ -1,40 +1,6 @@
-let API_PORT = 5000;
-let API_VERSION = 0;
-let API_LINK = `http://${document.location.hostname}:${API_PORT}/APIv${API_VERSION}`;
-let DEVICE_TIMEOUT = 60000 //ms
-let UPDATE_INTERVAL = 10000 //ms
-
 let CLASS_DEVICE_HOLDER = '.device-holder'
 
-
-class EventEmitter {
-    constructor() {
-        this.events = {};
-    }
-    
-    emit(eventName, data) {
-        const event = this.events[eventName];
-        if( event ) {
-            event.forEach(fn => {
-                fn.call(null, data);
-            });
-        }
-    }
-    
-    subscribe(eventName, fn) {
-        if(!this.events[eventName]) {
-            this.events[eventName] = [];
-        }
-        
-        this.events[eventName].push(fn);
-        return () => {
-            this.events[eventName] = this.events[eventName].filter(eventFn => fn !== eventFn);
-        }
-    }
-}
-
 let Emitter = new EventEmitter();
-
 
 let Device = (parent) => {
     return {
@@ -198,7 +164,7 @@ let Device = (parent) => {
             this.element.card.appendChild(measurement);
 
             this.element.card.addEventListener("click", () => {
-                document.location.href = '/scaler.html?id=' + this.id;
+                document.location.href = '/device.html?id=' + this.id;
             });
 
         },
