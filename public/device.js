@@ -404,12 +404,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         VisualizerElement.updateTemperature({
             timestamp: measurementData.timestamp,
             data: measurementData.temperature,
-            every: 5
+            every: 20
         });
         VisualizerElement.updateDigital({
             timestamp: measurementData.timestamp,
             data: measurementData.digital,
-            every: 5
+            every: 20
         });
     } else {
         let timestamp48h = [
