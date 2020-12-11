@@ -374,6 +374,13 @@ async function fetchDeviceData(id){
 
 document.addEventListener('DOMContentLoaded', async () => {
 
+    // set loading screen
+    loadingScreen.set({
+        title: "Obtaining Data",
+        description: "Obtaining data... this may take a few second..."
+    });
+    loadingScreen.show();
+
     // get query data from windows
     let urlParams = new URLSearchParams(window.location.search);
     let urlParamsId = urlParams.get('id');
@@ -391,13 +398,6 @@ document.addEventListener('DOMContentLoaded', async () => {
         macAddress: deviceData.mac_address[0],
         currentDate: Date.parse(deviceData.server_time)
     })
-
-    // set loading screen
-    loadingScreen.set({
-        title: "Obtaining Data",
-        description: "Obtaining data... this may take a few second..."
-    });
-    loadingScreen.show();
 
     // set chart data
     if(measurementData){
