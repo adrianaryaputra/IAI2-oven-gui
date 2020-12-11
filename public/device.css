@@ -5,7 +5,7 @@
     );
     /* background-color: var(--color-accent); */
     padding: var(--xlarge);
-    padding-bottom: 5em;
+    padding-bottom: 7em;
     display: flex;
     flex-direction: column;
 }

@@ -70,7 +70,7 @@ VisualizerElement = {
         // create temperature chart
         this.temperatureChart = new DataChart({
             parent: this.element(),
-            height: '300px',
+            height: '500px',
             canvasConfig: {
                 type: 'line',
                 data:{
