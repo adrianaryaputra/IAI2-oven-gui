@@ -16,14 +16,17 @@ VisualizerElement = {
         this.elem.nameText.textContent = name;
     },
 
-    updateTemperature({timestamp, data}){
+    updateTemperature({timestamp, data, every=60}){
+
         this.temperatureChart.update({
-            labels: timestamp,
-            datasets: data
+            labels: timestamp.filter((_,i) => {return i % every === 0}),
+            datasets: data.map((d,idx) => {
+                return d.filter((_,i) => {return i % every === 0});
+            })
         })
     },
 
-    updateDigital({timestamp, data}){
+    updateDigital({timestamp, data, every=60}){
         yLabel = this.digitalChart.getYLabel();
         if(data){
             data.forEach((d,idx) => {
@@ -34,8 +37,10 @@ VisualizerElement = {
             });
         }
         this.digitalChart.update({
-            xLabels: timestamp,
-            datasets: data
+            xLabels: timestamp.filter((_,i) => {return i % every === 0}),
+            datasets: data.map((d,idx) => {
+                return d.filter((_,i) => {return i % every === 0});
+            })
         })
     },
 
@@ -161,7 +166,7 @@ VisualizerElement = {
                 type: 'line',
                 data:{
                     xLabels: [],
-                    yLabels: ['Fan1', 'Fan2', 'Fan3', 'Exhaust', 'Alarm', 'OFF'],
+                    yLabels: ['Fan1', 'Fan2', 'Fan3', 'Exhaust', 'Status', 'OFF'],
                     datasets: [{
                         label: 'Fan 1',
                         borderColor: 'rgba(0,0,0,1)',
@@ -398,11 +403,13 @@ document.addEventListener('DOMContentLoaded', async () => {
     if(measurementData){
         VisualizerElement.updateTemperature({
             timestamp: measurementData.timestamp,
-            data: measurementData.temperature
+            data: measurementData.temperature,
+            every: 5
         });
         VisualizerElement.updateDigital({
             timestamp: measurementData.timestamp,
-            data: measurementData.digital
+            data: measurementData.digital,
+            every: 5
         });
     } else {
         let timestamp48h = [
