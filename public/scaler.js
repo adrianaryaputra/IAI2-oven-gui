@@ -1,5 +1,5 @@
 function returnHome(){
-    location.href = location.origin;
+    location.pathname = '/device.html';
 }
 
 
@@ -39,7 +39,7 @@ let ScalerHolder = {
                             gain: APIConnector.oldScale.gain,
                             shift: APIConnector.oldScale.shift,
                         },
-                        refresh_time: DEVICE_TIMEOUT
+                        refresh_time: Math.floor(DEVICE_TIMEOUT/1000)
                     }
 
                     console.log(result);
@@ -155,7 +155,7 @@ let ScalerHolder = {
                                 gain: tResult.map((v) => {return v.gain}),
                                 shift: tResult.map((v) => {return v.shift}),
                             },
-                            refresh_time: DEVICE_TIMEOUT
+                            refresh_time: Math.floor(DEVICE_TIMEOUT/1000)
                         }
 
                         console.log(result);
@@ -183,7 +183,7 @@ let ScalerHolder = {
                                 gain: [1, 1, 1],
                                 shift: [0, 0, 0],
                             },
-                            refresh_time: DEVICE_TIMEOUT
+                            refresh_time: Math.floor(DEVICE_TIMEOUT/1000)
                         }
 
                         console.log(result);
@@ -343,7 +343,7 @@ document.addEventListener("DOMContentLoaded", async () => {
     // update
     APIConnector.refresh().then(() => {
         APIConnector.update({
-            refresh_time: UPDATE_INTERVAL,
+            refresh_time: Math.floor(UPDATE_INTERVAL/1000),
             mac_address: APIConnector.macAddress,
             scaler: APIConnector.oldScale
         });
