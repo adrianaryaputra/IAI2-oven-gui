@@ -217,6 +217,9 @@ VisualizerElement = {
                         axis: 'x',
                         intersect: false,
                         callbacks: {
+                            title: (tooltipItem, data) => {
+                                return data.xLabels[tooltipItem[0].index]
+                            },
                             label: (tooltipItem, data) => {
                                 var label = data.datasets[tooltipItem.datasetIndex].label || '';
                                 if(label) label += ': ';
