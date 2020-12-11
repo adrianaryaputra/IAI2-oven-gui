@@ -409,7 +409,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         VisualizerElement.updateDigital({
             timestamp: measurementData.timestamp,
             data: measurementData.digital,
-            every: 20
+            every: 2
         });
     } else {
         let timestamp48h = [
