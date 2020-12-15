@@ -155,8 +155,8 @@ class ClickableButton{
     }){
         this.config = config;
         this.elem = document.createElement("div");
-        this.elem.className = this.config.class;
-        this.elem.textContent = this.config.text;
+        this.elem.className = 'clickable ' + this.config.class;
+        this.elem.textContent = this.config.text || '';
         this.elem.style.cursor = 'pointer';
         this.elem.addEventListener('click', this.config.callback);
         if(parent) parent.appendChild(this.elem);
@@ -178,7 +178,7 @@ class ButtonGroup{
         this.button = new Array();
         this.elem = new Object();
         this.elem.holder = document.createElement("div");
-        this.elem.holder.classList.add("temp-config-button");
+        this.elem.holder.classList.add("button-group");
 
         buttonConfigList.forEach((btnConfig) => {
             this.button.push(
@@ -317,6 +317,67 @@ class DataChart{
             this.chart.data.datasets[idx].data = data;
         });
         this.chart.update();
+    }
+
+}
+
+
+
+class DocumentCard{
+
+    constructor({
+        parent = document.body,
+        title = 'AYYMMXXX'
+    }){
+        this.parent = parent;
+        this.elem = new Object();
+        this.title = title; 
+        this._createElement();
+    }
+
+    element(){
+        return this.elem.card;
+    }
+
+    _createElement(){
+        this.elem.card = document.createElement('div');
+        this.elem.card.classList.add('doc-card');
+
+        this.elem.titleHolder = document.createElement('div');
+        this.elem.titleHolder.classList.add('holder-title');
+
+        this.elem.title = document.createElement('h2');
+        this.elem.title.textContent = this.title;
+        this.elem.titleHolder.appendChild(this.elem.title);
+
+        this.elem.date = document.createElement('h3');
+        this.elem.date.textContent = new Date().toLocaleString();
+        this.elem.titleHolder.appendChild(this.elem.date);
+
+        this.elem.buttonHolder = document.createElement('div');
+        this.elem.buttonHolder.classList.add('holder-button');
+
+        this.buttonGroup = new ButtonGroup({
+            buttonConfigList: [
+                {
+                    class: 'color-state-normal',
+                    text: "View"
+                },
+                {
+                    class: 'color-state-warning',
+                    text: "Print"
+                },
+                {
+                    class: 'color-state-danger',
+                    text: "Delete"
+                }
+            ],
+            parent: this.elem.buttonHolder
+        })
+
+        this.elem.card.appendChild(this.elem.titleHolder);
+        this.elem.card.appendChild(this.elem.buttonHolder);
+        this.parent.appendChild(this.element());
     }
 
 }

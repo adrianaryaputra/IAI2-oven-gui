@@ -87,6 +87,57 @@ body {
     font-weight: lighter;
 }
 
+.button-group{
+  display: flex;
+  gap: var(--large);
+  justify-content: center;
+  margin: var(--large) 0 0 0;
+}
+
+.button-group > div{
+  background-color: var(--color-accent);
+  padding: var(--medium) var(--xlarge);
+  text-align: center;
+  border-radius: var(--medium);
+}
+
+.button-group > div:hover{
+  box-shadow: 0 0 10px #666;
+}
+
+.hover-bloom:hover{
+  box-shadow: 0 0 10px #666;
+}
+
+.clickable:hover{
+  transition: .3s;
+  cursor: pointer;
+}
+
+.plus {
+  display:inline-block;
+  background:
+    linear-gradient(#000,#000),
+    linear-gradient(#000,#000),
+    #fff;
+  background-position:center;
+  background-size: 50% 4px,4px 50%;
+  background-repeat:no-repeat;
+}
+
+.alt {
+  background:
+    linear-gradient(#000,#000),
+    linear-gradient(#000,#000);
+  background-position:center;
+  background-size: 50% 2px,2px 50%; /*thickness = 2px, length = 50% (25px)*/
+  background-repeat:no-repeat;
+}
+
+.radius {
+  border-radius:50%;
+}
+
 /* loading spinner */
 .lds-ripple {
     display: inline-block;

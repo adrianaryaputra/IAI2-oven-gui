@@ -365,6 +365,7 @@ async function fetchMeasurementData({macAddress, currentDate = Date.now()}){
                     }
                 } else {
                     console.error(fetchResult);
+                    return;
                 }
             } else {
                 console.error(fetchResult);
@@ -414,11 +415,74 @@ async function fetchDeviceData(id){
     }
 }
 
+
+DocumentHolder = {
+
+    element(){
+        return this.elem.holder;
+    },
+
+    init(parent){
+        this.parent = parent;
+        this.elem = new Object();
+        this._createHTML();
+    },
+
+    _createHTML(){
+
+        // create holder element
+        this.elem.holder = document.createElement('div');
+        this.elem.holder.classList.add('doc-holder');
+
+        this.elem.title = document.createElement('h2');
+        this.elem.title.textContent = "Documents";
+        this.element().appendChild(this.elem.title);
+
+        this.elem.list = document.createElement('div');
+        this.elem.list.classList.add('doc-list');
+
+        // add doc button
+        this.elem.addDoc = document.createElement('div');
+        this.elem.addDoc.classList.add('doc-card');
+        this.elem.addDoc.classList.add('clickable');
+        this.elem.addDoc.classList.add('hover-bloom');
+        this.elem.addDoc.innerHTML = `
+            <span class="plus radius" style="width:38px; height:38px;"></span>  
+            <h2 style="margin-left: 10px">Add Document</h2>
+        `
+        this.elem.list.appendChild(this.elem.addDoc);
+        this.elem.addDoc.addEventListener('click', () => {
+            location.pathname = '/addoc.html';
+        })
+
+        // create doc-card
+        new DocumentCard({
+            parent: this.elem.list,
+            title: "A2012313"
+        })
+        new DocumentCard({
+            parent: this.elem.list,
+            title: "A2012314"
+        })
+        new DocumentCard({
+            parent: this.elem.list,
+            title: "A2012315"
+        })
+
+        this.element().appendChild(this.elem.list);
+        this.parent.appendChild(this.element());
+
+    }
+
+}
+
+
 document.addEventListener('DOMContentLoaded', async () => {
 
     // initialize everything
     loadingScreen = new LoadingScreen(document.body);
     VisualizerElement.init(document.body);
+    DocumentHolder.init(document.body);
 
     // set loading screen
     loadingScreen.set({
@@ -446,12 +510,12 @@ document.addEventListener('DOMContentLoaded', async () => {
         VisualizerElement.updateTemperature({
             timestamp: measurementData.timestamp,
             data: measurementData.temperature,
-            every: 20
+            every: 1
         });
         VisualizerElement.updateDigital({
             timestamp: measurementData.timestamp,
             data: measurementData.digital,
-            every: 2
+            every: 1
         });
     } else {
         let timestamp48h = [
