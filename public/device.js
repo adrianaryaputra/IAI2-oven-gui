@@ -381,8 +381,6 @@ async function fetchMeasurementData({macAddress, currentDate = Date.now()}){
     }
 }
 
-let transpose = a => a[0].map((_, c) => a.map(r => r[c]));
-
 async function fetchDeviceData(id){
     let fetchLink = new URL(API_LINK + '/device');
     fetchLink.search = new URLSearchParams({
@@ -452,7 +450,10 @@ DocumentHolder = {
         `
         this.elem.list.appendChild(this.elem.addDoc);
         this.elem.addDoc.addEventListener('click', () => {
-            location.pathname = '/addoc.html';
+            let url = new URL(location.origin);
+            url.pathname = '/doc.html';
+            url.search = location.search;
+            location = url;
         })
 
         // create doc-card

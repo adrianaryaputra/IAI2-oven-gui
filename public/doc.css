@@ -1,0 +1,68 @@
+.separator{
+    width: auto;
+    height: 1px;
+    background-image: linear-gradient(to right, #6660,#666f,#6660);
+    margin: 1em 0;
+}
+
+.add-document-holder{
+    padding: calc(2*var(--xlarge));
+    margin: auto;
+}
+
+.add-document-holder > table{
+    margin-top: 2em;
+}
+
+.input-holder{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+    gap: calc(2*var(--xlarge));
+}
+
+.title-holder > h1{
+    font-size: 2em;
+    text-align: center;
+    margin-bottom: 1em;
+}
+
+form{
+    display: grid;
+    grid-template-columns: auto 40% 30%;
+    gap: var(--normal);
+}
+
+form > label{
+    grid-column: 1;
+    margin: auto 0;
+}
+
+form input{
+    grid-column-start: span 2;
+    padding: var(--normal);
+    border-radius: var(--normal);
+    font-size: 1em;
+    font-family: "Monospace";
+    height: 100%;
+}
+
+form input:disabled{
+    color: #fff;
+}
+
+.input-double{
+    grid-column-start: span 1;
+}
+
+.annealing-add-btn{
+    padding: var(--large);
+    background-color: var(--color-accent);
+    border-radius: var(--large);
+}
+
+.annealing-btn-box{
+    display: flex;
+    justify-content: center;
+    flex-direction: row;
+    align-items: center;
+}

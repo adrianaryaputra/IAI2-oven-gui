@@ -8,6 +8,7 @@
     --color-text-default: hsl(0, 0%, 90%);
     --color-card-background: hsl(0, 0%, 10%);
     --color-accent: hsl(210, 64%, 26%);
+    --color-accent-darker: hsl(210, 64%, 21%);
     --color-state-normal:hsl(123, 91%, 27%);
     --color-state-warning: hsl(46, 81%, 30%);
     --color-state-danger: hsl(0, 70%, 35%);
@@ -20,6 +21,12 @@
     --font-size-default: 20px;
     --device-name-font-size: 1.7em;
     --device-status-font-size: 1.1em;
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+}
+
+::-webkit-scrollbar {
+  display: none;
 }
 
 .color-state-normal{
@@ -127,8 +134,8 @@ body {
 
 .alt {
   background:
-    linear-gradient(#000,#000),
-    linear-gradient(#000,#000);
+    linear-gradient(#fff,#fff),
+    linear-gradient(#fff,#fff);
   background-position:center;
   background-size: 50% 2px,2px 50%; /*thickness = 2px, length = 50% (25px)*/
   background-repeat:no-repeat;
@@ -137,6 +144,89 @@ body {
 .radius {
   border-radius:50%;
 }
+
+.hovercards-holder{
+  /* width: 100vw;
+  height: 100vh; */
+  background-color: hsla(0, 0%, 10%, 0.95);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+}
+
+.hovercards-card{
+  min-height: 100px;
+  margin: 50vh 0 0 50vw;
+  transform: translate(-50%, -50%);
+  background-color: var(--color-background);
+  padding: var(--xlarge);
+  border-radius: var(--xlarge);
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+}
+
+.table-default {
+  border-collapse: separate;
+  margin: 25px 0;
+  font-size: 0.9em;
+  font-family: sans-serif;
+  width: 100%;
+  border-radius: 10px;
+  counter-reset: row-num;
+}
+
+.table-default thead tr {
+  background-color: var(--color-accent-darker);
+  color: #ffffff;
+  text-align: left;
+}
+
+.table-default th,
+.table-default td {
+    padding: 12px 15px;
+}
+
+.table-default tbody tr {
+  border-bottom: thin solid #dddddd;
+  background-color: var(--color-accent);
+  counter-increment: row-num;
+}
+
+.table-default tbody tr td:first-child::before {
+  content: counter(row-num);
+}
+
+.table-default tbody tr:nth-of-type(even) {
+  background-color: var(--color-accent-darker);
+}
+
+.error-viewer{
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background-color: var(--color-state-danger);
+  margin: var(--xlarge);
+  padding: var(--xlarge);
+  border-radius: var(--large);
+  display: flex;
+  justify-content: space-between;
+  box-shadow: 0 0 var(--xlarge) var(--color-background);
+}
+
+.error-viewer > h3 {
+  font-size: 1em;
+}
+
+.error-viewer > div {
+  height: 1.2em;
+  width: 1.2em;
+  transform: rotate(45deg);
+}
+
 
 /* loading spinner */
 .lds-ripple {
