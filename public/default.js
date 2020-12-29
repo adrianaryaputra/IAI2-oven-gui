@@ -512,10 +512,10 @@ class InputElement{
                     document.createElement('input')
                 ];
                 this.elem.input[0].setAttribute("type","text");
-                this.elem.input[0].setAttribute("list","autoList");
+                this.elem.input[0].setAttribute("list", ("autoList-"+this.strLabel).replace(" ","-"));
                 // generate datalist
                 let dL = document.createElement('datalist');
-                dL.setAttribute("id", "autoList");
+                dL.setAttribute("id", ("autoList-"+this.strLabel).replace(" ","-"));
                 // generate value, append to datalist
                 this.selection.forEach(val => {
                     let op = document.createElement("option");
@@ -680,6 +680,7 @@ class AnnealingTable extends Table{
         eventEmitter,
         emitId = "AnnealingTable",
     }){
+        header.push('Config');
         super({parent, header});
         this.annealingList = new Array();
         this.eventEmitter = eventEmitter;
@@ -790,10 +791,31 @@ class AnnealingTable extends Table{
         res.dimLebar = parseFloat(input.dimLebar[0]);
         res.dimTebal = parseFloat(input.dimTebal[0]);
         res.berat = parseFloat(input.berat[0]);
-        res.dimension = `${res.dimTebal} x ${res.dimLebar} x ${res.dimPanjang}`
+        res.coreDiameter = parseFloat(input.coreDiameter[0]);
+        res.OD = this._calculateOD(res.dimPanjang, res.dimTebal, res.coreDiameter);
+        res.dimension = `${res.dimTebal}μ x ${res.dimLebar}mm x ${res.dimPanjang}m`;
         res.alloyType = input.alloyType[0];
         res.remark = input.remark[0];
         return res;
+    }
+
+    _calculateOD(length, thickness, coreDiameter){
+        switch(coreDiameter){
+            case 3:
+                return Math.sqrt(
+                    (4/3.14) * 
+                    (length*1000) * 
+                    (thickness/1000) + (81 * 81)
+                ).toFixed(1);
+                break;
+            case 6:
+            default:
+                return Math.sqrt(
+                    (4 / 3.14) * 
+                    (length * 1000) * 
+                    (thickness / 1000) + (156 * 156)
+                ).toFixed(1);
+        }
     }
 
     _inputDataFilter(data){
@@ -813,7 +835,8 @@ class AnnealingTable extends Table{
             'position', 
             'rollNum', 
             'dimension', 
-            'berat', 
+            'berat',
+            'OD',
             'alloyType', 
             'remark'
         ].map((key, idx) => {

@@ -58,6 +58,12 @@ AddDocument = {
                     id: "opFinish",
                     label: "Finish Operator",
                     type: "text",
+                },  {
+                    id: "flag",
+                    label: "Type",
+                    type: "text",
+                    value: ["Special"],
+                    isEditable: false,
                 }
             ]
         });
@@ -79,23 +85,39 @@ AddDocument = {
                         this.eventListener.emit("FinishTime calculate");
                     }
                 }, {
-                    id: "durationTime",
-                    label: "Duration",
+                    id: "setTemperature1",
+                    label: "Temperature 1",
+                    type: "text",
+                    placeholder: "200",
+                }, {
+                    id: "durationTime1",
+                    label: "Duration 1",
                     type: "duration",
                     inputListener: () => {
                         this.eventListener.emit("FinishTime calculate");
                     }
                 }, {
+                    id: "setTemperature2",
+                    label: "Temperature 2",
+                    type: "text",
+                    placeholder: "200",
+                }, {
+                    id: "durationTime2",
+                    label: "Duration 2",
+                    type: "duration",
+                    inputListener: () => {
+                        this.eventListener.emit("FinishTime calculate");
+                    }
+                }, {
+                    id: "coolingTime",
+                    label: "Cooling Duration",
+                    type: "duration",
+                }, {
                     id: "finishTime",
                     label: "Finish Time",
                     type: "datetime",
                     isEditable: false,
-                }, {
-                    id: "setTemperature",
-                    label: "Temperature",
-                    type: "text",
-                    placeholder: "200",
-                }
+                },
             ]
         });
 
@@ -140,6 +162,11 @@ AddDocument = {
                         "A1100",
                     ],
                 }, {
+                    id: "coreDiameter",
+                    label: "Core (inch)",
+                    type: "list",
+                    selection: [3, 6],
+                }, {
                     id: "remark",
                     label: "Remark",
                     type: "text",
@@ -151,19 +178,19 @@ AddDocument = {
             configs: [
                 {
                     id: "dimTebal",
-                    label: "Tebal",
+                    label: "Tebal (μ)",
                     type: "text",
                 }, {
                     id: "dimLebar",
-                    label: "Lebar",
+                    label: "Lebar (mm)",
                     type: "text",
                 }, {
                     id: "dimPanjang",
-                    label: "Panjang",
+                    label: "Panjang (m)",
                     type: "text",
                 }, {
                     id: "berat",
-                    label: "Berat",
+                    label: "Berat (kg)",
                     type: "text",
                 }, 
             ]
@@ -190,6 +217,7 @@ AddDocument = {
                         if(formData.alloyType[0] == '') validData = false;
 
                         if(validData){
+                            console.log(formData);
                             this.eventListener.emit("AnnealingForm submit", formData);
                             this.annealingInfoForm.reset();
                             this.annealingDimForm.reset();
@@ -229,9 +257,9 @@ AddDocument = {
                 "Roll No.",
                 "Dimension (Tebal x Lebar x Panjang)",
                 "Weight",
+                "OD",
                 "Alloy Type",
                 "Remarks",
-                "Config"
             ],
             eventEmitter: this.eventListener,
             emitId: "AnnealingTbl"
@@ -300,12 +328,17 @@ AddDocument = {
             let ovenCfg = this.formOvenCfg.get();
             let startTimeRaw = ovenCfg.startTime;
             let startTime = new Date(startTimeRaw.join("T"));
-            let durationRaw = ovenCfg.durationTime[0].split(":").map(e => {return parseInt(e)});
-            let durationMs = durationRaw[0] * 60 * 60 * 1000 +
-                             durationRaw[1] * 60 * 1000;
-            let duration = new Date(durationMs);
+            let duration1Raw = ovenCfg.durationTime1[0].split(":").map(e => {return parseInt(e)});
+            let duration1 = duration1Raw[0] * 60 * 60 * 1000 +
+                             duration1Raw[1] * 60 * 1000;
+            let duration2Raw = ovenCfg.durationTime2[0].split(":").map(e => {return parseInt(e)});
+            let duration2 = duration2Raw[0] * 60 * 60 * 1000 +
+                             duration2Raw[1] * 60 * 1000;
+            let coolingRaw = ovenCfg.coolingTime[0].split(":").map(e => {return parseInt(e)});
+            let cooling = coolingRaw[0] * 60 * 60 * 1000 +
+                            coolingRaw[1] * 60 * 1000;
             if(startTime != "Invalid Date"){
-                let finishTimeMs = startTime-(-duration);
+                let finishTimeMs = +startTime + duration1 + duration2 + cooling;
                 let finishTime = new Date(finishTimeMs);
                 let finishValDate = (finishTime.getFullYear()) + '-' +
                                     (''+(finishTime.getMonth()+1)).padStart(2,'0') + '-' +
