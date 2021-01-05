@@ -40,31 +40,21 @@ let Device = (parent) => {
         },
 
 
-        init(data) {
+        init(initialData) {
             this._createCard();
             this.element.parent.appendChild(this.element.card);
-            this._pushData(data);
-            this._refresh();
+            Emitter.subscribe(`device@${initialData.id}`, (data) => {
+                this._pushData(data);
+                this._refresh();
+            });
+            Emitter.emit(`device@${initialData.id}`, initialData);
             return this;
-        },
-
-
-        update(newData) {
-            this._pushData(newData);
-            this._refresh();
-        },
-
-
-        selfRemove(){
-            this.element.parent.removeChild(this.element.card);
         },
 
 
         _pushData(data){
             if(data.id) this.id = data.id;
-
             if(data.name) this.value.name = data.name;
-
             if(data.temperature) data.temperature.forEach((t,idx) => {
                 if(t>=999 || t<10){
                     this.value.temperature[idx] = NaN;
@@ -229,26 +219,15 @@ let Devices = {
     init() {
 
         Emitter.subscribe('event:fetch-success', () => {
-
             this._parseFetch();
-    
             // add new and update data
             for (const key in this.deviceFetchList) {
                 if (this.deviceObjList.hasOwnProperty(key)) {
-                    this.deviceObjList[key].update(this.deviceFetchList[key]);
+                    Emitter.emit(`device@${key}`, this.deviceFetchList[key]);
                 } else {
                     this.deviceObjList[key] = Device(this.deviceParentElement).init(this.deviceFetchList[key]);
                 }
             }
-    
-            // remove unused device
-            for (const key in this.deviceObjList) {
-                if(!this.deviceFetchList.hasOwnProperty(key)) {
-                    this.deviceObjList[key].selfRemove();
-                    delete this.deviceObjList[key];
-                }
-            }
-    
         });
 
     },
