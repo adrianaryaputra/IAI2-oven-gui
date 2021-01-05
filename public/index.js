@@ -253,8 +253,8 @@ let Devices = {
 
     },
 
-    update() {
-        this.fetchData();
+    async update() {
+        await this.fetchData()
         setTimeout(()=> {this.update()}, UPDATE_INTERVAL);
     },
 
