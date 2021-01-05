@@ -86,7 +86,6 @@ PrintElement = {
                 <div class="ttd-col">
                     <p class="ttd-title">Operator Annealing</p>
                     <div class="ttd-sign">
-                        <p>${this.operator.finish}</p>
                     </div>
                 </div>
                 <div class="ttd-col">
@@ -109,6 +108,7 @@ PrintElement = {
                 "Roll No.",
                 "Dimension (Tebal x Lebar x Panjang)",
                 "Weight",
+                "OD",
                 "Alloy Type",
                 "Remarks",
             ]
@@ -125,30 +125,33 @@ PrintElement = {
             height: '50mm',
             globalColor: '#000',
             globalFontColor: '#000',
-            globalFontSize: 9,
+            globalFontSize: 10,
             canvasConfig: {
                 type: 'line',
                 data:{
                     labels: [],
                     datasets: [{
                         label: 'Zone 1',
-                        borderColor: 'black',
+                        borderColor: 'rgb(150,0,0)',
                         borderDash: [2,2],
+                        borderWidth: 1,
                         fill: false,
                         lineTension: 0,
                         pointRadius: 0,
                         data: [],
                     },{
                         label: 'Zone 2',
-                        borderColor: 'grey',
+                        borderColor: 'rgb(0,150,0)',
+                        borderWidth: 1,
                         fill: false,
                         lineTension: 0,
                         pointRadius: 0,
                         data: [],
                     },{
                         label: 'Zone 3',
-                        borderColor: 'black',
+                        borderColor: 'rgb(0,0,150)',
                         borderDash: [8,8],
+                        borderWidth: 1,
                         fill: false,
                         lineTension: 0,
                         pointRadius: 0,
@@ -217,7 +220,7 @@ PrintElement = {
             height: '30mm',
             globalColor: '#000',
             globalFontColor: '#000',
-            globalFontSize: 9,
+            globalFontSize: 10,
             canvasConfig: {
                 type: 'line',
                 data:{
@@ -225,40 +228,45 @@ PrintElement = {
                     yLabels: ['Fan1', 'Fan2', 'Fan3', 'Exhaust', 'Status', 'OFF', ''],
                     datasets: [{
                         label: 'Fan 1',
-                        borderColor: 'rgba(0,0,0,1)',
+                        borderColor: 'rgba(150,0,0,1)',
                         backgroundColor: 'rgba(0,0,0,1)',
+                        borderWidth: 1,
                         fill: false,
                         pointRadius: 0,
                         lineTension: 0,
                         data: [],
                     },{
                         label: 'Fan 2',
-                        borderColor: 'rgba(0,0,0,1)',
+                        borderColor: 'rgba(0,150,0,1)',
                         backgroundColor: 'rgba(0,0,0,1)',
+                        borderWidth: 1,
                         fill: false,
                         pointRadius: 0,
                         lineTension: 0,
                         data: [],
                     },{
                         label: 'Fan 3',
-                        borderColor: 'rgba(0,0,0,1)',
+                        borderColor: 'rgba(0,0,150,1)',
                         backgroundColor: 'rgba(0,0,0,1)',
+                        borderWidth: 1,
                         fill: false,
                         pointRadius: 0,
                         lineTension: 0,
                         data: [],
                     },{
                         label: 'Exhaust',
-                        borderColor: 'rgba(0,0,0,1)',
+                        borderColor: 'rgba(150,0,0,1)',
                         backgroundColor: 'rgba(0,0,0,1)',
+                        borderWidth: 1,
                         fill: false,
                         pointRadius: 0,
                         lineTension: 0,
                         data: [],
                     },{
                         label: 'Alarm',
-                        borderColor: 'rgba(0,0,0,1)',
+                        borderColor: 'rgba(0,150,0,1)',
                         backgroundColor: 'rgba(0,0,0,1)',
+                        borderWidth: 1,
                         fill: false,
                         pointRadius: 0,
                         lineTension: 0,
@@ -391,17 +399,24 @@ document.addEventListener("DOMContentLoaded", () => {
                 "SPK No.": "001/IX/1/20/345",
                 "SPK Date": "2020/12/21",
                 "Furnace No.": "OV0007",
-            }, {
+                "Type": "Special Order",
                 "Temper": "H0",
+                "Roll Count": `${3}pcs`,
+                "Total Weight": `${13250}kg`,
+            }, {
                 "Start Time": "2020/12/21 13:00",
                 "Finish Time": "2020/12/23 13:00",
-                "Duration": "48h 00m",
+                "Temperature 1": `${240}°C`,
+                "Duration 1": "8h 00m",
+                "Temperature 2": `${215}°C`,
+                "Duration 2": "48h 00m",
+                "Cooling Time": "4h 00m",
             }
         ],
         load: [
-            ["FLT1", "?????", "0.13 x 210 x 4800", "4273", "A8011", "-"],
-            ["BLT1", "?????", "0.13 x 210 x 4900", "4472", "A8011", "-"],
-            ["FLT2", "?????", "0.13 x 210 x 4850", "4353", "A8011", "-"],
+            ["FLT1", "?????", "0.13 x 210 x 4800", "4273", "711", "A8011", "-"],
+            ["BLT1", "?????", "0.13 x 210 x 4900", "4472", "713", "A8011", "-"],
+            ["FLT2", "?????", "0.13 x 210 x 4850", "4353", "710", "A8011", "-"],
         ],
         operator: {
             start: "Nama Operator Start",

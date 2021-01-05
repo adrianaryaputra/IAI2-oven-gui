@@ -89,6 +89,9 @@ AddDocument = {
                     label: "Temperature 1",
                     type: "text",
                     placeholder: "200",
+                    inputListener: () => {
+                        this.eventListener.emit("FinishTime calculate");
+                    }
                 }, {
                     id: "durationTime1",
                     label: "Duration 1",
@@ -101,6 +104,9 @@ AddDocument = {
                     label: "Temperature 2",
                     type: "text",
                     placeholder: "200",
+                    inputListener: () => {
+                        this.eventListener.emit("FinishTime calculate");
+                    }
                 }, {
                     id: "durationTime2",
                     label: "Duration 2",
@@ -112,6 +118,9 @@ AddDocument = {
                     id: "coolingTime",
                     label: "Cooling Duration",
                     type: "duration",
+                    inputListener: () => {
+                        this.eventListener.emit("FinishTime calculate");
+                    }
                 }, {
                     id: "finishTime",
                     label: "Finish Time",
@@ -262,6 +271,7 @@ AddDocument = {
                 "Remarks",
             ],
             eventEmitter: this.eventListener,
+            annealingParameter: new AnnealingParameter(),
             emitId: "AnnealingTbl"
         })
 
@@ -301,6 +311,7 @@ AddDocument = {
             } else {
                 this.annealingTable.add(data);
             }
+            this.eventListener.emit("Type updater");
         }); 
 
         this.eventListener.subscribe("AnnealingTbl edit", (res) => {
@@ -319,6 +330,48 @@ AddDocument = {
             console.log(this.formDocumentInfo.get());
             console.log(this.formOvenCfg.get());
         });
+
+
+        // type updater
+        this.eventListener.subscribe("Type updater", () => {
+
+            let ovenCfg = this.formOvenCfg.get();
+            let duration1Raw = ovenCfg.durationTime1[0].split(":").map(e => {return parseInt(e)});
+            let duration1 = duration1Raw[0] * 60 * 60 * 1000 +
+                             duration1Raw[1] * 60 * 1000;
+            let duration2Raw = ovenCfg.durationTime2[0].split(":").map(e => {return parseInt(e)});
+            let duration2 = duration2Raw[0] * 60 * 60 * 1000 +
+                             duration2Raw[1] * 60 * 1000;
+            let coolingRaw = ovenCfg.coolingTime[0].split(":").map(e => {return parseInt(e)});
+            let cooling = coolingRaw[0] * 60 * 60 * 1000 +
+                            coolingRaw[1] * 60 * 1000;
+            let ovenTemp1 = parseFloat(ovenCfg.setTemperature1[0]);
+            let ovenTemp2 = parseFloat(ovenCfg.setTemperature2[0]);
+            let sumDuration = duration1 + duration2 + cooling;
+
+            let typeParam = this.annealingTable.annealingList.map(l => {
+                return l.loadParam.data
+            });
+
+            let typeMap = typeParam.map(type => {
+                return type.filter(t => {
+                    return (
+                        ((t.duration1Min * 60 * 60 * 1000 + t.duration2Min * 60 * 60 * 1000 + t.coolMin * 60 * 60 * 1000) <= sumDuration) &&
+                        ((t.duration1Max * 60 * 60 * 1000 + t.duration2Max * 60 * 60 * 1000 + t.coolMax * 60 * 60 * 1000) >  sumDuration) &&
+                        ((ovenTemp1 == t.temperature1 || ovenTemp1 == t.temperature2) &&
+                         (ovenTemp2 == t.temperature1 || ovenTemp2 == t.temperature2))
+                    );
+                }).length > 0;
+            });
+
+            console.log(typeMap);
+            if((typeMap.indexOf(false) == -1) && (typeMap.length > 0)){
+                this.formDocumentInfo.set({ flag: ["Standard"] });
+            } else {
+                this.formDocumentInfo.set({ flag: ["Special"] });
+            }
+            this.annealingTable.isSpecial(typeMap);
+        })
 
 
 
@@ -351,6 +404,8 @@ AddDocument = {
                     finishTime: [finishValDate, finishValTime],
                 });
             }
+
+            this.eventListener.emit("Type updater");
         })
 
 

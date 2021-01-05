@@ -195,6 +195,10 @@ body {
   counter-increment: row-num;
 }
 
+.table-default .special{
+  background-color: var(--color-state-danger) !important;
+}
+
 .table-default tbody tr td:first-child::before {
   content: counter(row-num);
 }

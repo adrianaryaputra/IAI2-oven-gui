@@ -69,6 +69,7 @@ body{
     flex-grow: 1;
     display: grid;
     grid-template-columns: 20mm auto;
+    grid-template-rows: repeat(auto-fit, 1em);
     gap: 3px;
 }
 

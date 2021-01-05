@@ -678,23 +678,24 @@ class AnnealingTable extends Table{
         parent,
         header = [],
         eventEmitter,
+        annealingParameter,
         emitId = "AnnealingTable",
     }){
         header.push('Config');
         super({parent, header});
         this.annealingList = new Array();
         this.eventEmitter = eventEmitter;
+        this.par = annealingParameter;
         this.emitId = emitId + " ";
     }
 
     add(annelingInput){
-        
         let annealingData = this._parseData(annelingInput);
+        console.log(annealingData);
         if(this._inputDataFilter(annealingData)){
             this.annealingList.push(annealingData);
             this._generateRow();
         }
-
     }
 
 
@@ -703,12 +704,19 @@ class AnnealingTable extends Table{
         data,
     }){
         let annealingData = this._parseData(data);
+        console.log(annealingData);
         if(this._inputDataFilter(annealingData)){
             this.annealingList[index] = annealingData;
             this._generateRow();
         }
     }
 
+    isSpecial(arr){
+        arr.forEach((standard, index) => {
+            this.annealingList[index].isSpecial = !standard
+        })
+        this._generateRow();
+    }
 
     _generateRow(){
 
@@ -720,6 +728,11 @@ class AnnealingTable extends Table{
 
             let rowData = this._data2row(data);
             let tr = document.createElement('tr');
+
+            if(data.isSpecial){
+                tr.classList.add('special');
+            }
+
             let tnum = document.createElement('td');
             tr.appendChild(tnum);
             
@@ -750,6 +763,7 @@ class AnnealingTable extends Table{
                 callback: () => {
                     this.annealingList.splice(idx, 1);
                     this._generateRow();
+                    this.eventEmitter.emit("Type updater");
                 }
             });
         });
@@ -796,25 +810,44 @@ class AnnealingTable extends Table{
         res.dimension = `${res.dimTebal}μ x ${res.dimLebar}mm x ${res.dimPanjang}m`;
         res.alloyType = input.alloyType[0];
         res.remark = input.remark[0];
+        res.loadParam = this.par.find("type", "==", res.alloyType.replace('A',''))
+                                .find("ODMin", "<=", res.OD)
+                                .find("ODMax", ">", res.OD)
+                                .find("widthMin", "<=", res.dimLebar)
+                                .find("widthMax", ">", res.dimLebar)
+                                .find("thicknessMin", "<=", res.dimTebal)
+                                .find("thicknessMax", ">", res.dimTebal);
         return res;
     }
 
+    _checkSpecial(){
+
+    }
+
     _calculateOD(length, thickness, coreDiameter){
+        length = parseFloat(length);
+        thickness = parseFloat(thickness);
+        coreDiameter = parseFloat(coreDiameter);
         switch(coreDiameter){
             case 3:
-                return Math.sqrt(
-                    (4/3.14) * 
-                    (length*1000) * 
-                    (thickness/1000) + (81 * 81)
-                ).toFixed(1);
+                return parseFloat(
+                    Math.sqrt(
+                        (4/3.14) * 
+                        (length*1000) * 
+                        (thickness/1000) + (81 * 81)
+                    ).toFixed(0)
+                );
                 break;
             case 6:
+                return parseFloat(
+                    Math.sqrt(
+                        (4 / 3.14) * 
+                        (length * 1000) * 
+                        (thickness / 1000) + (156 * 156)
+                    ).toFixed(0)
+                );
             default:
-                return Math.sqrt(
-                    (4 / 3.14) * 
-                    (length * 1000) * 
-                    (thickness / 1000) + (156 * 156)
-                ).toFixed(1);
+                return 0;
         }
     }
 

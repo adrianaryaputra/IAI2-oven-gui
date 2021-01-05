@@ -255,6 +255,7 @@ let Devices = {
 
     update() {
         this.fetchData();
+        setTimeout(()=> {this.update()}, UPDATE_INTERVAL);
     },
 
     async fetchData() {
@@ -327,9 +328,5 @@ document.addEventListener("DOMContentLoaded", async () => {
 
     Devices.init();
     Devices.update();
-
-    setInterval(() => {
-        Devices.update();
-    }, UPDATE_INTERVAL);
 
 });

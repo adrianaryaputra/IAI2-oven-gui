@@ -7,18 +7,23 @@ class ArrayQuery{
         let fil = this.data.filter((obj) => {
             switch(comparator){
                 case "GT":
+                case ">":
                     return obj[key] > value;
                     break;
                 case "GTE":
+                case ">=":
                     return obj[key] >= value;
                     break;
                 case "LT":
+                case "<":
                     return obj[key] < value;
                     break;
                 case "LTE":
+                case "<=":
                     return obj[key] <= value;
                     break;
                 case "EQ":
+                case "==":
                 default:
                     return obj[key] == value;
             }
@@ -136,7 +141,7 @@ let AnnealingParameterData = [
         coolMin: 7,         coolMax: 7,
     }, {
         type: 1235,
-        ODMin: 400,         ODMax: 450,
+        ODMin: 400,         ODMax: 451,
         widthMin: 600,      widthMax: 700,
         thicknessMin: 11.5,  thicknessMax: 12,
         duration1Min: 4,    duration1Max: 6,
@@ -145,7 +150,7 @@ let AnnealingParameterData = [
         coolMin: 6,         coolMax: 6,
     }, {
         type: 1235,
-        ODMin: 400,         ODMax: 450,
+        ODMin: 400,         ODMax: 451,
         widthMin: 700,      widthMax: 800,
         thicknessMin: 11.5,  thicknessMax: 12,
         duration1Min: 4,    duration1Max: 6,
@@ -154,7 +159,7 @@ let AnnealingParameterData = [
         coolMin: 7,         coolMax: 7,
     }, {
         type: 1235,
-        ODMin: 400,         ODMax: 450,
+        ODMin: 400,         ODMax: 451,
         widthMin: 800,      widthMax: 850,
         thicknessMin: 11.5,  thicknessMax: 12,
         duration1Min: 8,    duration1Max: 8,
@@ -163,7 +168,7 @@ let AnnealingParameterData = [
         coolMin: 7,         coolMax: 7,
     }, {
         type: 1235,
-        ODMin: 400,         ODMax: 450,
+        ODMin: 400,         ODMax: 451,
         widthMin: 850,      widthMax: 900,
         thicknessMin: 11.5,  thicknessMax: 12,
         duration1Min: 8,    duration1Max: 8,
@@ -172,7 +177,7 @@ let AnnealingParameterData = [
         coolMin: 7,         coolMax: 7,
     }, {
         type: 1235,
-        ODMin: 400,         ODMax: 450,
+        ODMin: 400,         ODMax: 451,
         widthMin: 900,      widthMax: 1000,
         thicknessMin: 11.5,  thicknessMax: 12,
         duration1Min: 9,    duration1Max: 10,
