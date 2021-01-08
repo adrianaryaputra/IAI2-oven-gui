@@ -22,7 +22,7 @@ VisualizerElement = {
             this.temperatureChart.update({
                 labels: timestamp.filter((_,i) => {return i % every === 0}),
                 datasets: data.map((d,idx) => {
-                    return d.filter((_,i) => {return i % every === 0}).map(d => {return kalman.filter(d)});
+                    return d.filter((_,i) => {return i % every === 0}).map(d => {return Math.round(kalman.filter(d))});
                 })
             });
         }
