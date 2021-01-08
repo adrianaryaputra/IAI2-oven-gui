@@ -17,17 +17,19 @@ VisualizerElement = {
     },
 
     updateTemperature({timestamp, data, every=60}){
+        var kalman = new KalmanFilter();
         if(data){
             this.temperatureChart.update({
                 labels: timestamp.filter((_,i) => {return i % every === 0}),
                 datasets: data.map((d,idx) => {
-                    return d.filter((_,i) => {return i % every === 0});
+                    return d.filter((_,i) => {return i % every === 0}).map(d => {return kalman.filter(d)});
                 })
             });
         }
     },
 
     updateDigital({timestamp, data, every=60}){
+        var kalman = new KalmanFilter();
         yLabel = this.digitalChart.getYLabel();
         if(data){
             data.forEach((d,idx) => {
@@ -40,7 +42,7 @@ VisualizerElement = {
             this.digitalChart.update({
                 xLabels: timestamp.filter((_,i) => {return i % every === 0}),
                 datasets: data.map((d,idx) => {
-                    return d.filter((_,i) => {return i % every === 0});
+                    return d.filter((_,i) => {return i % every === 0}).map(d => {return kalman.filter(d)});
                 })
             });
         }
