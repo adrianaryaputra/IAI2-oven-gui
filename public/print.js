@@ -518,17 +518,8 @@ document.addEventListener("DOMContentLoaded", () => {
 
     Handles.init();
 
-    LoadingScreen = new LoadingScreen(document.body);
-
-    LoadingScreen.set({
-        title: "Obtaining Data",
-        description: "Obtaining data... this may take a few second...",
-    });
-    LoadingScreen.show();
-
     Handles.eventListener.subscribe("LOAD:FINISH", () => {
-        LoadingScreen.hide();
-        window.print();
+        setTimeout(window.print, 1000);
     })
 
     Handles.eventListener.subscribe("UI:SHOW DOC", doc => {
