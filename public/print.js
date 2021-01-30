@@ -441,6 +441,10 @@ Handles = {
         this.eventListener.subscribe("API:PARSE MEASUREMENT GET", async(res) => {
             data = await res.json();
             console.log(data);
+            timestamp = data.payload.map(d => { return d.timestamp });
+            temperature = data.payload.map(d => { return d.measurement.temperature });
+            digital = data.payload.map(d => { return d.measurement.digital });
+            console.log(timestamp, temperature, digital);
         })
 
         this.eventListener.subscribe("API:PARSE DOCUMENT GET", async (data) => {
