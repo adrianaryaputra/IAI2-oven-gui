@@ -238,16 +238,8 @@ let Devices = {
 
     _parseFetch() {
         if(this.fetchResult.success){
-
-            let sortedLoad = this.fetchResult.payload.sort((a, b) => {
-                let fa = a.name.toLowerCase(),
-                    fb = b.name.toLowerCase();
-                if (fa < fb) return -1;
-                if (fa > fb) return 1;
-                return 0;
-            });
-
-            let idList = sortedLoad.map(p => { return p._id });
+            
+            let idList = this.fetchResult.payload.map(p => { return p._id });
 
             if(idList.length == 11){
                 idList.forEach((id) => {
@@ -258,7 +250,7 @@ let Devices = {
                     }
                 });
     
-                sortedLoad.forEach((p) => {
+                this.fetchResult.payload.forEach((p) => {
                     let fetchdata = new Object();
                     if(this.fetchResult.server_time) fetchdata.server_time = this.fetchResult.server_time;
                     if(p._id) fetchdata.id = p._id;

@@ -330,11 +330,21 @@ class DocumentCard{
 
     constructor({
         parent = document.body,
-        title = 'AYYMMXXX'
+        title = 'AYYMMXXX',
+        id,
+        date,
+        oven,
+        searchLink,
+        onDelete,
     }){
+        this.id = id;
         this.parent = parent;
         this.elem = new Object();
-        this.title = title; 
+        this.title = title;
+        this.date = date;
+        this.oven = oven;
+        this.searchLink = searchLink;
+        this.onDelete = onDelete;
         this._createElement();
     }
 
@@ -353,8 +363,12 @@ class DocumentCard{
         this.elem.title.textContent = this.title;
         this.elem.titleHolder.appendChild(this.elem.title);
 
+        this.elem.ovenInfo = document.createElement('h3');
+        this.elem.ovenInfo.textContent = "from oven " + this.oven;
+        this.elem.titleHolder.appendChild(this.elem.ovenInfo);
+
         this.elem.date = document.createElement('h3');
-        this.elem.date.textContent = new Date().toLocaleString();
+        this.elem.date.textContent = this.date;
         this.elem.titleHolder.appendChild(this.elem.date);
 
         this.elem.buttonHolder = document.createElement('div');
@@ -368,8 +382,7 @@ class DocumentCard{
                     callback: () => {
                         let url = new URL(location.origin);
                         url.pathname = "/print.html";
-                        url.search = "";
-
+                        url.search = this.searchLink;
                         window.open(url, '_blank', "toolbar=no");
                     }
                 },
@@ -379,13 +392,16 @@ class DocumentCard{
                     callback: () => {
                         let url = new URL(location.origin);
                         url.pathname = '/doc.html';
-                        url.search = location.search + '&lot=A2012323';
+                        url.search = this.searchLink;
                         location = url;
                     }
                 },
                 {
                     class: 'color-state-danger',
-                    text: "Delete"
+                    text: "Delete",
+                    callback: () => {
+                        this.onDelete(this.id);
+                    },
                 }
             ],
             parent: this.elem.buttonHolder
@@ -458,7 +474,7 @@ class InputElement{
 
     constructor({
         parent = document.body,
-        label = "Unlabeled",
+        label,
         type = "text",
         placeholder = "",
         selection = [],
@@ -482,10 +498,16 @@ class InputElement{
         }
     }
 
+    element() {
+        return this.elem.input;
+    }
+
     _createHTML(){
         
-        this.elem.label = document.createElement('label');
-        this.elem.label.textContent = this.strLabel;
+        if(this.strLabel) {
+            this.elem.label = document.createElement('label');
+            this.elem.label.textContent = this.strLabel;
+        }
 
         switch (this.type) {
             case "text":
@@ -541,7 +563,7 @@ class InputElement{
                 break;
         }
 
-        this.parent.appendChild(this.elem.label);
+        if(this.strLabel) this.parent.appendChild(this.elem.label);
         this.elem.input.forEach(element => {
             if(!this.isEditable) element.setAttribute("disabled","true");
             if(this.inputListener) element.addEventListener("input", this.inputListener);

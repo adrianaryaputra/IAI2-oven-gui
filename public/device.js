@@ -17,12 +17,11 @@ VisualizerElement = {
     },
 
     updateTemperature({timestamp, data, every=60}){
-        var kalman = new KalmanFilter();
         if(data){
             this.temperatureChart.update({
                 labels: timestamp.filter((_,i) => {return i % every === 0}),
                 datasets: data.map((d,idx) => {
-                    return d.filter((_,i) => {return i % every === 0}).map(d => {return Math.round(kalman.filter(d))});
+                    return d.filter((_,i) => {return i % every === 0});
                 })
             });
         }
@@ -436,10 +435,6 @@ DocumentHolder = {
         this.elem.holder = document.createElement('div');
         this.elem.holder.classList.add('doc-holder');
 
-        this.elem.title = document.createElement('h2');
-        this.elem.title.textContent = "Documents";
-        this.element().appendChild(this.elem.title);
-
         this.elem.list = document.createElement('div');
         this.elem.list.classList.add('doc-list');
 
@@ -458,20 +453,6 @@ DocumentHolder = {
             url.pathname = '/doc.html';
             url.search = location.search;
             location = url;
-        })
-
-        // create doc-card
-        new DocumentCard({
-            parent: this.elem.list,
-            title: "A2012313"
-        })
-        new DocumentCard({
-            parent: this.elem.list,
-            title: "A2012314"
-        })
-        new DocumentCard({
-            parent: this.elem.list,
-            title: "A2012315"
         })
 
         this.element().appendChild(this.elem.list);

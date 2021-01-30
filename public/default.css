@@ -231,6 +231,55 @@ body {
   transform: rotate(45deg);
 }
 
+.doc-holder{
+  margin-top: -6em;
+  padding: var(--xlarge);
+}
+
+.doc-holder > h2{
+  margin-bottom: 1em;
+  font-size: 2em;
+  text-align: center;
+}
+
+.doc-list{
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(600px, 1fr));
+  gap: var(--xlarge);
+}
+
+.doc-card{
+  z-index: 10;
+  padding: var(--large);
+  background-color: var(--color-card-background);
+  border-radius: var(--large);
+  display: flex;
+  justify-content: center;
+  flex-direction: row;
+  align-items: center;
+}
+
+.doc-card > h2{
+  text-align: center;
+}
+
+.holder-button > *{
+  margin: auto;
+}
+
+.holder-title{
+  flex-grow: 1;
+}
+
+.holder-title > h2{
+  font-size: 1.7em;
+}
+
+.holder-title > h3{
+  font-size: .8em;
+  font-weight: lighter;
+}
+
 
 /* loading spinner */
 .lds-ripple {

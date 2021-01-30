@@ -1,0 +1,3 @@
+.document-list, .document-search, .document-download{
+    margin: calc(3*var(--xlarge)) var(--xlarge);
+}

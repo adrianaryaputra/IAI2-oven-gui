@@ -24,7 +24,7 @@ PrintElement = {
         this.updateDigital({
             timestamp,
             data: digital,
-        })
+        });
     },
 
     updateTemperature({timestamp, data}){
@@ -383,7 +383,110 @@ PrintElement = {
 
 }
 
+
+Handles = {
+
+    eventListener: new EventEmitter(),
+
+    init() {
+        this.handleError();
+        this.handleAPI();
+        this.handleParam();
+    },
+
+    handleError() {
+        this.eventListener.subscribe("ERROR", (e) => {
+            console.error(e);
+            this.errorViewer.set(e);
+        })
+    },
+
+    handleParam() {
+        urlSrc = new URLSearchParams(location.search);
+        newSrc = new URLSearchParams();
+        newSrc.set('id', urlSrc.get('doc'));
+        this.eventListener.emit("API:GET DOCUMENT", newSrc);
+    },
+
+    handleAPI() {
+        this.eventListener.subscribe("API:GET DOCUMENT", async (docId) => {
+            console.log("GET DOCUMENT " + API_LINK + '/document?' + docId);
+            let res = await fetch(API_LINK + '/document?' + docId);
+            if(res.ok) {
+                this.eventListener.emit("API:PARSE DOCUMENT GET", res);
+            } else {
+                let err = await res.json();
+                this.eventListener.emit("ERROR", err.error);
+            }
+        });
+
+        this.eventListener.subscribe("API:GET MEASUREMENT", async(searchParam) => {
+            console.log("GET MEASUREMENT " 
+                + API_LINK 
+                + '/measurement?' 
+                + searchParam);
+            if(res.ok) {
+                this.eventListener.emit("API:PARSE MEASUREMENT GET", res);
+            } else {
+                let err = await res.json();
+                this.eventListener.emit("ERROR", err.error);
+            }
+        })
+
+        this.eventListener.subscribe("API:PARSE DOCUMENT GET", async (data) => {
+            res = await data.json();
+            console.log(res);
+            this.eventListener.emit("UI:SHOW DOC", res.payload[0]);
+
+            // get measurement
+            let measParam = new URLSearchParams();
+            measParam.set("mac_address")
+            measParam.set("date_from", new Date(res.payload[0].start_date));
+            measParam.set("date_to")
+            this.eventListener.emit("API:GET MEASUREMENT",)
+        })
+    },
+
+}
+
+
+function t2duration(stamp) {
+    let hr = Math.floor(stamp/1000/60/60);
+    let stmin = stamp - hr*60*60*1000;
+    let min = Math.floor(stmin/1000/60);
+    return `${hr}hr ${min}min`;
+}
+
+
+function load2table(load) {
+    // ["FLT1", "?????", "0.13 x 210 x 4800", "4273", "711", "A8011", "-"],
+    return load.map(l => {
+        return [
+            l.position,
+            l.roll_num,
+            `${l.dimension.thick}μ x ${l.dimension.width}mm x ${l.dimension.length}`,
+            l.weight,
+            l.od,
+            l.alloy_type,
+            l.remark
+        ]
+    })
+}
+
+
+function load2weight(load) {
+    var red = load.reduce((acc, cur) => {
+        console.log(cur.weight);
+        return acc + cur.weight
+    }, 0)
+    console.log(red);
+    return red;
+}
+
+
 document.addEventListener("DOMContentLoaded", () => {
+
+    Handles.init();
 
     LoadingScreen = new LoadingScreen(document.body);
 
@@ -392,62 +495,67 @@ document.addEventListener("DOMContentLoaded", () => {
         description: "Obtaining data... this may take a few second...",
     });
 
-    PrintElement.init({
-        info: [
-            {
-                "Lot No.": "A12342135",
-                "SPK No.": "001/IX/1/20/345",
-                "SPK Date": "2020/12/21",
-                "Furnace No.": "OV0007",
-                "Type": "Special Order",
-                "Temper": "H0",
-                "Roll Count": `${3}pcs`,
-                "Total Weight": `${13250}kg`,
-            }, {
-                "Start Time": "2020/12/21 13:00",
-                "Finish Time": "2020/12/23 13:00",
-                "Temperature 1": `${240}°C`,
-                "Duration 1": "8h 00m",
-                "Temperature 2": `${215}°C`,
-                "Duration 2": "48h 00m",
-                "Cooling Time": "4h 00m",
-            }
-        ],
-        load: [
-            ["FLT1", "?????", "0.13 x 210 x 4800", "4273", "711", "A8011", "-"],
-            ["BLT1", "?????", "0.13 x 210 x 4900", "4472", "713", "A8011", "-"],
-            ["FLT2", "?????", "0.13 x 210 x 4850", "4353", "710", "A8011", "-"],
-        ],
-        operator: {
-            start: "Nama Operator Start",
-            finish: "Nama Operator Finish",
-        },
-        timestamp: [
-            new Date(0),
-            new Date(100000),
-            new Date(200000),
-            new Date(300000),
-            new Date(400000),
-            new Date(500000),
-            new Date(600000),
-            new Date(700000),
-            new Date(800000),
-            new Date(900000),
-        ],
-        temperature: [
-            [50, 53, 70, 93, 120, 165, 205, 201, 206, 180],
-            [53, 50, 73, 95, 125, 160, 203, 203, 206, 180],
-            [55, 55, 75, 90, 123, 163, 200, 201, 204, 180],
-        ],
-        digital: [
-            [0,0,0,0,1,1,1,1,1,0],
-            [0,0,0,0,1,1,1,1,1,0],
-            [0,0,0,1,1,1,1,1,0,0],
-            [0,0,0,1,1,1,1,1,0,0],
-            [0,0,0,0,1,1,1,1,1,0],
-        ],
-    });
+    Handles.eventListener.subscribe("UI:SHOW DOC", doc => {
 
-    window.print();
+        console.log(doc)
+        
+        PrintElement.init({
+            info: [
+                {
+                    "Lot No.": `A${doc.lot_num}`,
+                    "SPK No.": doc.spk_num,
+                    "SPK Date": (new Date(doc.spk_date)).toLocaleDateString('id-ID'),
+                    "Furnace No.": doc.furnace,
+                    "Type": doc.special ? "Special Order" : "Standard Order",
+                    "Temper": doc.temper,
+                    "Roll Count": `${doc.load.length} pcs`,
+                    "Total Weight": `${load2weight(doc.load)} kg`,
+                }, {
+                    "Start Time": (new Date(doc.start_date)).toLocaleString('en-IE', {timeZone: 'Asia/Jakarta'}),
+                    "Finish Time": new Date(
+                                   +(new Date(doc.start_date))
+                                   + doc.duration[0]
+                                   + doc.duration[1]
+                                   + doc.cooling
+                                   ).toLocaleString('en-IE', {timeZone: 'Asia/Jakarta'}),
+                    "Temperature 1": `${doc.temperature[0]}°C`,
+                    "Duration 1": t2duration(doc.duration[0]),
+                    "Temperature 2": `${doc.temperature[1]}°C`,
+                    "Duration 2": t2duration(doc.duration[1]),
+                    "Cooling Time": t2duration(doc.cooling),
+                }
+            ],
+            load: load2table(doc.load),
+            operator: {
+                start: doc.operator.start,
+                finish: doc.operator.finish,
+            },
+            // timestamp: [
+            //     new Date(0),
+            //     new Date(100000),
+            //     new Date(200000),
+            //     new Date(300000),
+            //     new Date(400000),
+            //     new Date(500000),
+            //     new Date(600000),
+            //     new Date(700000),
+            //     new Date(800000),
+            //     new Date(900000),
+            // ],
+            // temperature: [
+            //     [50, 53, 70, 93, 120, 165, 205, 201, 206, 180],
+            //     [53, 50, 73, 95, 125, 160, 203, 203, 206, 180],
+            //     [55, 55, 75, 90, 123, 163, 200, 201, 204, 180],
+            // ],
+            // digital: [
+            //     [0,0,0,0,1,1,1,1,1,0],
+            //     [0,0,0,0,1,1,1,1,1,0],
+            //     [0,0,0,1,1,1,1,1,0,0],
+            //     [0,0,0,1,1,1,1,1,0,0],
+            //     [0,0,0,0,1,1,1,1,1,0],
+            // ],
+        });
+
+    });
 
 });
