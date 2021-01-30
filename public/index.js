@@ -241,32 +241,28 @@ let Devices = {
             
             let idList = this.fetchResult.payload.map(p => { return p._id });
 
-            if(idList.length == 11){
-                idList.forEach((id) => {
-                    if(this.deviceIdList.indexOf(id) == -1){
-                        console.log("new", id);
-                        this.deviceIdList.push(id);
-                        this.deviceObjList.push(new Device(id));
-                    }
-                });
-    
-                this.fetchResult.payload.forEach((p) => {
-                    let fetchdata = new Object();
-                    if(this.fetchResult.server_time) fetchdata.server_time = this.fetchResult.server_time;
-                    if(p._id) fetchdata.id = p._id;
-                    if(p.name) fetchdata.name = p.name;
-                    if(p.mac_address) fetchdata.mac_address = p.mac_address;
-                    if(p.last_measurement){
-                        if(p.last_measurement.timestamp) fetchdata.timestamp = p.last_measurement.timestamp;
-                        if(p.last_measurement.measurement.temperature) fetchdata.temperature = p.last_measurement.measurement.temperature;
-                        if(p.last_measurement.measurement.digital) fetchdata.digital = p.last_measurement.measurement.digital;
-                    }
-                    Emitter.emit(`device@${p._id}`, fetchdata)
-                });
-            } else {
-                console.error("ERROR: invalid data - passed");
-                setTimeout(async () => { await this.fetchData() }, 1000);
-            }
+            idList.forEach((id) => {
+                if(this.deviceIdList.indexOf(id) == -1){
+                    console.log("new", id);
+                    this.deviceIdList.push(id);
+                    this.deviceObjList.push(new Device(id));
+                }
+            });
+
+            this.fetchResult.payload.forEach((p) => {
+                let fetchdata = new Object();
+                if(this.fetchResult.server_time) fetchdata.server_time = this.fetchResult.server_time;
+                if(p._id) fetchdata.id = p._id;
+                if(p.name) fetchdata.name = p.name;
+                if(p.mac_address) fetchdata.mac_address = p.mac_address;
+                if(p.last_measurement){
+                    if(p.last_measurement.timestamp) fetchdata.timestamp = p.last_measurement.timestamp;
+                    if(p.last_measurement.measurement.temperature) fetchdata.temperature = p.last_measurement.measurement.temperature;
+                    if(p.last_measurement.measurement.digital) fetchdata.digital = p.last_measurement.measurement.digital;
+                }
+                Emitter.emit(`device@${p._id}`, fetchdata)
+            });
+
         } else {
             console.log("error?");
         }
