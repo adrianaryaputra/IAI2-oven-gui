@@ -444,7 +444,6 @@ Handles = {
             timestamp = data.payload.map(d => { return d.timestamp });
             temperature = data.payload.map(d => { return d.measurement.temperature });
             digital = data.payload.map(d => { return d.measurement.digital });
-            console.log(timestamp, temperature, digital);
 
             PrintElement.updateTemperature({
                 timestamp,
@@ -455,6 +454,8 @@ Handles = {
                 timestamp,
                 data: transpose(digital),
             });
+
+            this.eventListener.emit("LOAD:FINISH");
         })
 
         this.eventListener.subscribe("API:PARSE DOCUMENT GET", async (data) => {
@@ -523,6 +524,12 @@ document.addEventListener("DOMContentLoaded", () => {
         title: "Obtaining Data",
         description: "Obtaining data... this may take a few second...",
     });
+    LoadingScreen.show();
+
+    Handles.eventListener.subscribe("LOAD:FINISH", () => {
+        LoadingScreen.hide();
+        window.print();
+    })
 
     Handles.eventListener.subscribe("UI:SHOW DOC", doc => {
 
