@@ -445,6 +445,16 @@ Handles = {
             temperature = data.payload.map(d => { return d.measurement.temperature });
             digital = data.payload.map(d => { return d.measurement.digital });
             console.log(timestamp, temperature, digital);
+
+            PrintElement.updateTemperature({
+                timestamp,
+                data: transpose(temperature),
+            });
+
+            PrintElement.updateDigital({
+                timestamp,
+                data: transpose(digital),
+            });
         })
 
         this.eventListener.subscribe("API:PARSE DOCUMENT GET", async (data) => {
