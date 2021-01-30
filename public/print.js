@@ -413,6 +413,7 @@ Handles = {
             console.log("GET DOCUMENT " + API_LINK + '/document?' + docId);
             let res = await fetch(API_LINK + '/document?' + docId);
             if(res.ok) {
+                console.log(res)
                 this.eventListener.emit("API:PARSE DOCUMENT GET", res);
             } else {
                 let err = await res.json();
@@ -425,12 +426,21 @@ Handles = {
                 + API_LINK 
                 + '/measurement?' 
                 + searchParam);
+            let res = await fetch(API_LINK 
+                + '/measurement?' 
+                + searchParam);
             if(res.ok) {
                 this.eventListener.emit("API:PARSE MEASUREMENT GET", res);
             } else {
+                console.error(res);
                 let err = await res.json();
                 this.eventListener.emit("ERROR", err.error);
             }
+        })
+
+        this.eventListener.subscribe("API:PARSE MEASUREMENT GET", async(res) => {
+            data = await res.json();
+            console.log(data);
         })
 
         this.eventListener.subscribe("API:PARSE DOCUMENT GET", async (data) => {
@@ -440,10 +450,15 @@ Handles = {
 
             // get measurement
             let measParam = new URLSearchParams();
-            measParam.set("mac_address")
-            measParam.set("date_from", new Date(res.payload[0].start_date));
-            measParam.set("date_to")
-            this.eventListener.emit("API:GET MEASUREMENT",)
+            measParam.set("mac_address", res.payload[0].mac_address);
+            measParam.set("date_from", new Date(res.payload[0].start_date).toISOString());
+            measParam.set("date_to", new Date(
+                +(new Date(res.payload[0].start_date))
+                + res.payload[0].duration[0]
+                + res.payload[0].duration[1]
+                + res.payload[0].cooling).toISOString());
+
+            this.eventListener.emit("API:GET MEASUREMENT",measParam);
         })
     },
 

@@ -82,8 +82,8 @@ class LoadingScreen{
     }
 
     set({
-        title = 'Loading Title',
-        description = 'Loading Decription.. very very long...'
+        title = 'Loading Data',
+        description = 'Loading.. this may take a few second...'
     } = {}){
         this.elem.title.textContent = title;
         this.elem.description.textContent = description;

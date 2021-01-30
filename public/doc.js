@@ -11,16 +11,31 @@ AddDocument = {
 
         let url = new URL(location.href);
         this.query = new URLSearchParams(url.search);
+        this.draw(parent);
+
+        this.apiHandle();
+        this.linkHandle();
+        this.errorHandle();
 
         this.eventListener.emit("API:GET DEVICE BY ID", this.query.get('id'));
 
-        this.eventListener.subscribe("UI:DRAW", (data) => {
-            this.draw(parent)
+        this.eventListener.subscribe("DATA:UPDATE", (data) => {
+            this.mac_address =  data.mac_address[0].toString(16).match( /.{1,2}/g ).join('-');
+            this.furnaceName = data.name
+            this.formDocumentInfo.set({
+                furnaceNum: [ this.furnaceName ]
+            });
+            this.loadingScreen.hide();
+            console.log(this.mac_address);
         })
 
     },
 
     draw(parent){
+
+        this.loadingScreen = new LoadingScreen(parent);
+        this.loadingScreen.set()
+        this.loadingScreen.show()
 
         this.holder.classList.add("add-document-holder");
 
@@ -57,7 +72,7 @@ AddDocument = {
                     id: "furnaceNum",
                     label: "Furnace",
                     type: "text",
-                    value: ["OV1001"],
+                    value: [ this.furnaceName ],
                     isEditable: false,
                 }, {
                     id: "opStart",
@@ -380,6 +395,7 @@ AddDocument = {
                 ],
                 cooling: duration2ms(ovenCfg.coolingTime[0]),
                 load: items,
+                mac_address: this.mac_address,
             })
 
             console.log(data2send);
@@ -467,14 +483,21 @@ AddDocument = {
     apiHandle() {
 
         this.eventListener.subscribe("API:GET DEVICE BY ID", async (deviceId) => {
+            console.log("GETTING DEVICE BY ID " + deviceId);
             let res = await fetch(API_LINK + '/device?id=' + deviceId);
             if(res.ok) {
-                this.eventListener.emit("LINK:GO DEVICE");
+                this.eventListener.emit("API:PARSE DEVICE", res);
             } else {
                 let err = await res.json();
                 this.eventListener.emit("ERROR", err.error);
             }
         });
+
+        this.eventListener.subscribe("API:PARSE DEVICE", async (data) => {
+            res = await data.json();
+            console.log(res.payload[0]);
+            this.eventListener.emit("DATA:UPDATE", res.payload[0]);
+        })
 
         this.eventListener.subscribe("API:CREATE NEW", async (data) => {
             console.log("API HANDLE", JSON.stringify(data));
@@ -538,7 +561,4 @@ function duration2ms(dur) {
 
 document.addEventListener("DOMContentLoaded", () => {
     AddDocument.init(document.body);
-    AddDocument.apiHandle();
-    AddDocument.linkHandle();
-    AddDocument.errorHandle();
 });
