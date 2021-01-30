@@ -17,18 +17,80 @@ AddDocument = {
         this.linkHandle();
         this.errorHandle();
 
-        this.eventListener.emit("API:GET DEVICE BY ID", this.query.get('id'));
+        if (this.query.get('id')) {
+            this.eventListener.emit("API:GET DEVICE BY ID", this.query.get('id'));
+        } else if(this.query.get('doc')) {
+            this.eventListener.emit("API:GET DOCUMENT BY ID", this.query.get('doc'));
+        } else {
+            this.eventListener.emit("ERROR",new Error("unspecified document"));
+            this.loadingScreen.hide();
+        }
 
-        this.eventListener.subscribe("DATA:UPDATE", (data) => {
+        this.eventListener.subscribe("DATA:UPDATE FROM DEVICEID", (data) => {
             this.mac_address =  data.mac_address[0].toString(16).match( /.{1,2}/g ).join('-');
+
             this.furnaceName = data.name
             this.formDocumentInfo.set({
                 furnaceNum: [ this.furnaceName ]
             });
             this.loadingScreen.hide();
             console.log(this.mac_address);
-        })
+        });
 
+        this.eventListener.subscribe("DATA:UPDATE FROM DOCID", (data) => {
+            this.mac_address =  data.mac_address;
+            this.docId = data._id;
+
+            this.formDocumentInfo.set({
+                LotNum: ['A'+data.lot_num],
+                spkNum: [data.spk_num],
+                spkDate: [new Date(data.spk_date).toISOString().split('T')[0]],
+                furnaceNum: [ data.furnace ],
+                opStart: [data.operator.start],
+                opFinish: [data.operator.finish],
+                flag: [data.special ? "Special":"Standard"],
+            });
+
+            this.formOvenCfg.set({
+                temperType: [data.temper],
+                startTime: data.start_date.replace('Z','').split('T'),
+                setTemperature1: [data.temperature[0]],
+                durationTime1: [this.t2duration(data.duration[0])],
+                setTemperature2: [data.temperature[1]],
+                durationTime2: [this.t2duration(data.duration[1])],
+                coolingTime: [this.t2duration(data.cooling)],
+            });
+            this.eventListener.emit("FinishTime calculate");
+
+            let annLoad = data.load.map(l => {
+                return new Object({
+                    rollNum: [l.roll_num],
+                    position: [l.position],
+                    alloyType: [l.alloy_type],
+                    coreDiameter: [l.core_diameter],
+                    remark: [l.remark],
+                    dimTebal: [l.dimension.thick],
+                    dimLebar: [l.dimension.width],
+                    dimPanjang: [l.dimension.length],
+                    berat: [l.weight],
+                });
+            });
+
+            annLoad.forEach(l => {
+                this.eventListener.emit("AnnealingForm submit", l);
+            });
+
+            this.loadingScreen.hide();
+            console.log(this.mac_address);
+        });
+
+    },
+
+    t2duration(stamp) {
+        let hr = Math.floor(stamp/1000/60/60);
+        let stmin = stamp - hr*60*60*1000;
+        let min = Math.floor(stmin/1000/60);
+        return hr.toString().padStart(2,'0') + ":" + min.toString().padStart(2,'0');
     },
 
     draw(parent){
@@ -39,7 +101,7 @@ AddDocument = {
 
         this.holder.classList.add("add-document-holder");
 
-        let type = this.query.get('lot') ? "Edit": "Add";
+        let type = this.query.get('doc') ? "Edit": "Add";
         this.titleholder = document.createElement('div');
         this.titleholder.classList.add("title-holder");
         this.titleholder.innerHTML = `<h1>${type} Document</h1>`
@@ -367,6 +429,7 @@ AddDocument = {
                     },
                     weight: i.berat,
                     od: i.OD,
+                    core_diameter: i.coreDiameter,
                     remark: (i.remark == "") ? "-" : i.remark,
                 })
             })
@@ -398,8 +461,11 @@ AddDocument = {
                 mac_address: this.mac_address,
             })
 
+            if(this.docId) data2send.id = this.docId;
+
             console.log(data2send);
-            this.eventListener.emit("API:CREATE NEW", data2send);
+            if(this.query.get('doc')) this.eventListener.emit("API:EDIT DOC", data2send);
+            else this.eventListener.emit("API:CREATE DOC", data2send);
         });
 
 
@@ -493,16 +559,50 @@ AddDocument = {
             }
         });
 
+        this.eventListener.subscribe("API:GET DOCUMENT BY ID", async(docId) => {
+            console.log("GETTING DOCUMENT BY ID " + docId);
+            let res = await fetch(API_LINK + '/document?id=' + docId);
+            if(res.ok) {
+                this.eventListener.emit("API:PARSE DOCUMENT", res);
+            } else {
+                let err = await res.json();
+                this.eventListener.emit("ERROR", err.error);
+            }
+        });
+
+        this.eventListener.subscribe("API:PARSE DOCUMENT", async (data) => {
+            res = await data.json();
+            console.log(res.payload[0]);
+            this.eventListener.emit("DATA:UPDATE FROM DOCID", res.payload[0]);
+        });
+
         this.eventListener.subscribe("API:PARSE DEVICE", async (data) => {
             res = await data.json();
             console.log(res.payload[0]);
-            this.eventListener.emit("DATA:UPDATE", res.payload[0]);
-        })
+            this.eventListener.emit("DATA:UPDATE FROM DEVICEID", res.payload[0]);
+        });
 
-        this.eventListener.subscribe("API:CREATE NEW", async (data) => {
-            console.log("API HANDLE", JSON.stringify(data));
+        this.eventListener.subscribe("API:CREATE DOC", async (data) => {
+            console.log("API HANDLE CREATE", JSON.stringify(data));
             let res = await fetch(API_LINK + '/document', {
                 method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+                body: JSON.stringify(data)
+            });
+            if(res.ok) {
+                this.eventListener.emit("LINK:GO DEVICE");
+            } else {
+                let err = await res.json();
+                this.eventListener.emit("ERROR", err.error);
+            }
+        });
+
+        this.eventListener.subscribe("API:EDIT DOC", async (data) => {
+            console.log("API HANDLE EDIT", JSON.stringify(data));
+            let res = await fetch(API_LINK + '/document', {
+                method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json;charset=utf-8'
                 },
