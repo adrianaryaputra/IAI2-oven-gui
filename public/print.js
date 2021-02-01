@@ -492,12 +492,12 @@ function load2table(load) {
     // ["FLT1", "?????", "0.13 x 210 x 4800", "4273", "711", "A8011", "-"],
     return load.map(l => {
         return [
-            l.position,
-            l.roll_num,
+            l.position.toUpperCase(),
+            l.roll_num.toUpperCase(),
             `${l.dimension.thick}μ x ${l.dimension.width}mm x ${l.dimension.length}`,
             l.weight,
             l.od,
-            l.alloy_type,
+            l.alloy_type.toUpperCase(),
             l.remark
         ]
     })
