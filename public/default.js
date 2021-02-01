@@ -825,8 +825,8 @@ class AnnealingTable extends Table{
 
     _parseData(input){
         let res = new Object();
-        res.position = input.position[0];
-        res.rollNum = input.rollNum[0];
+        res.position = input.position[0].toUpperCase();
+        res.rollNum = input.rollNum[0].toUpperCase();
         res.dimPanjang = parseFloat(input.dimPanjang[0]);
         res.dimLebar = parseFloat(input.dimLebar[0]);
         res.dimTebal = parseFloat(input.dimTebal[0]);
@@ -834,7 +834,7 @@ class AnnealingTable extends Table{
         res.coreDiameter = parseFloat(input.coreDiameter[0]);
         res.OD = this._calculateOD(res.dimPanjang, res.dimTebal, res.coreDiameter);
         res.dimension = `${res.dimTebal}μ x ${res.dimLebar}mm x ${res.dimPanjang}m`;
-        res.alloyType = input.alloyType[0];
+        res.alloyType = input.alloyType[0].toUpperCase();
         res.remark = input.remark[0];
         res.loadParam = this.par.find("type", "==", res.alloyType.replace('A',''))
                                 .find("ODMin", "<=", res.OD)
