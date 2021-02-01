@@ -16,6 +16,7 @@ DocumentList = {
     },
 
     guiHandle() {
+
         this.eventListener.subscribe("UI:GENERATE DOC LIST", (doc) => {
             let searchLink = new URLSearchParams();
             searchLink.set('doc', doc._id);
@@ -27,9 +28,17 @@ DocumentList = {
                 oven: doc.furnace,
                 searchLink: searchLink,
                 onDelete: (id) => {
-                    this.eventListener.emit("API:DELETE DOCUMENT", id);
+                    this.eventListener.emit("UI:CONFIRM DELETE", id);
                 }
             }))
+        })
+
+        this.eventListener.subscribe("UI:CONFIRM DELETE", id => {
+            if (confirm('Are you sure you want to delete this document?')) {
+                this.eventListener.emit("API:DELETE DOCUMENT", id);
+            } else {
+                console.log('Thing was not saved to the database.');
+            }
         })
     },
 
@@ -37,6 +46,17 @@ DocumentList = {
         this.eventListener.subscribe("API:GET DOCUMENT", async () => {
             console.log("GET DOCUMENT");
             let res = await fetch(API_LINK + '/document');
+            if(res.ok) {
+                this.eventListener.emit("API:PARSE GET", res);
+            } else {
+                let err = await res.json();
+                this.eventListener.emit("ERROR", err.error);
+            }
+        });
+
+        this.eventListener.subscribe("API:GET DOCUMENT BY LOT", async (lot) => {
+            console.log("GET DOCUMENT");
+            let res = await fetch(API_LINK + '/document?lot_num=' + lot);
             if(res.ok) {
                 this.eventListener.emit("API:PARSE GET", res);
             } else {
@@ -58,9 +78,13 @@ DocumentList = {
         this.eventListener.subscribe("API:PARSE GET", async (data) => {
             res = await data.json();
             console.log(res);
+
+            this.docList.forEach(d => d.delete());
+            this.docList.length = 0;
             
             // for each payload... create new document
             res.payload.forEach(doc => {
+                console.log("UI:GENERATE DOC LIST", doc)
                 this.eventListener.emit("UI:GENERATE DOC LIST", doc);
             });
 
@@ -101,7 +125,20 @@ DocumentSearch = {
             config: {
                 class: "color-state-normal",
                 text: "search",
-                callback: () => {},
+                callback: () => {
+                    // get data from searchbox
+                    let d = this.elem.searchBox.get();
+                    console.log(d);
+                    // match regex
+                    let dparse = d[0].match(/[Aa]([\d]+)/);
+                    console.log(dparse);
+                    // find matching lot num from DB
+                    if(dparse) {
+                        console.log(dparse[1])
+                        // update document list
+                        DocumentList.eventListener.emit("API:GET DOCUMENT BY LOT", dparse[1])
+                    }
+                },
             }
         });
     },

@@ -348,6 +348,10 @@ class DocumentCard{
         this._createElement();
     }
 
+    delete(){
+        this.parent.removeChild(this.element())
+    }
+
     element(){
         return this.elem.card;
     }
