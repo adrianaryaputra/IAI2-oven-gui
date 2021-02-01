@@ -51,9 +51,14 @@ AddDocument = {
                 flag: [data.special ? "Special":"Standard"],
             });
 
+            let timeAtWIB = new Date(
+                +new Date(data.start_date) 
+                +1000*60*60*7
+            ).toISOString()
+
             this.formOvenCfg.set({
                 temperType: [data.temper],
-                startTime: data.start_date.replace('Z','').split('T'),
+                startTime: timeAtWIB.replace('Z','').split('T'),
                 setTemperature1: [data.temperature[0]],
                 durationTime1: [this.t2duration(data.duration[0])],
                 setTemperature2: [data.temperature[1]],
