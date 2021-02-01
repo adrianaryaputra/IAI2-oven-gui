@@ -216,7 +216,7 @@ let TimeAlarm = {
         this._styling();
         console.log("init alarm");
         this.alarm = new SoundElement('./sound/mixkit-urgent-simple-tone-loop-2976.wav');
-        this.eventListener.emit("API:GET UNFINISHED ANNEALING");
+        setTimeout(() => this.eventListener.emit("API:GET UNFINISHED ANNEALING"), 5000);
     },
 
     _createHTML() {
