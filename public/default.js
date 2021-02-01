@@ -612,11 +612,13 @@ class HoverCard{
 
     constructor({
         parent,
+        style = new Object(),
         childs = new Array(),
     }){
         this.parent = parent;
         this.childs = childs;
         this._createHTML();
+        this._styling(style);
         this.hide();
     }
 
@@ -645,6 +647,11 @@ class HoverCard{
         this.childs.forEach((elem) => {
             this.card.appendChild(elem)
         });
+    }
+
+    _styling(style){
+        console.log(style);
+        for (const key in style) { this.card.style[key] = style[key] }
     }
 
 }
@@ -945,4 +952,21 @@ class ErrorViewer{
         this.holder.style.display = "none";
     }
 
+}
+
+
+function SoundElement(src) { //src stands for source
+    this.sound = document.createElement("audio");
+    this.sound.src = src;
+    this.sound.setAttribute("preload", "auto");
+    this.sound.setAttribute("controls", "none");
+    this.sound.style.display = "none";
+    this.sound.loop = true
+    document.body.appendChild(this.sound);
+    this.play = function(){
+        this.sound.play();
+    }
+    this.stop = function(){
+        this.sound.pause();
+    }
 }

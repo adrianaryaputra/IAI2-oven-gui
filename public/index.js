@@ -204,6 +204,192 @@ class Device {
 };
 
 
+let TimeAlarm = {
+
+    eventListener: new EventEmitter(),
+
+    init() {
+        this.handleAPI();
+        this.handleError();
+        this.handleUI();
+        this._createHTML();
+        this._styling();
+        console.log("init alarm");
+        this.alarm = new SoundElement('./sound/mixkit-urgent-simple-tone-loop-2976.wav');
+        this.eventListener.emit("API:GET UNFINISHED ANNEALING");
+    },
+
+    _createHTML() {
+        this.alertElem = document.createElement('div');
+        this.alertHead = document.createElement('h2');
+        this.alertElem.appendChild(this.alertHead);
+        this.alertHead.textContent = "WARNING!";
+        this.alertOvenBody = document.createElement('h3');
+        this.alertElem.appendChild(this.alertOvenBody);
+        this.alertOvenBody.textContent = "OV0000";
+        this.alertBody = document.createElement('h3');
+        this.alertElem.appendChild(this.alertBody);
+        this.alertBody.textContent = "Annealing Time Reached";
+        this.button = new ButtonGroup({
+            buttonConfigList: [
+                {
+                    text: 'OK',
+                    callback: () => {
+                        this.eventListener.emit("API:SET ISFINISHED");
+                    },
+                }
+            ],
+            parent: this.alertElem,
+        })
+
+        this.card = new HoverCard({
+            parent: document.body,
+            childs: [ this.alertElem ],
+            style: {
+                backgroundColor: 'yellow',
+                width: 'max-content'
+            }
+        });
+    },
+
+    _styling() {
+        this.alertElem.style.border = '10px dashed black';
+        this.alertElem.style.padding = '1em';
+
+        this.alertHead.style.textAlign = 'center';
+        this.alertHead.style.margin = '1rem';
+        this.alertHead.style.fontSize = '2em';
+        this.alertHead.style.color = 'red';
+
+        this.alertOvenBody.style.textAlign = 'center';
+        this.alertOvenBody.style.margin = '.5rem 1rem';
+        this.alertOvenBody.style.fontSize = '1.5em';
+        this.alertOvenBody.style.color = 'black';
+
+        this.alertBody.style.textAlign = 'center';
+        this.alertBody.style.margin = '.5rem 1rem';
+        this.alertBody.style.fontSize = '1.5em';
+        this.alertBody.style.color = 'black';
+    },
+
+    enable({
+        oven,
+        text,
+    }) {
+        this.alertOvenBody.textContent = oven;
+        this.alertBody.textContent = text;
+        this.card.show();
+        this.alarm.play();
+    },
+
+    disable() {
+        this.card.hide();
+        this.alarm.stop();
+    },
+
+    handleUI() {
+        this.eventListener.subscribe("UI:SET ALARM", (data) => {
+            this.doc = data;
+            console.log(data);
+            // get server time
+            let serverTime = new Date(data.server_time);
+            console.log(serverTime);
+            // get starting time
+            let startTime = new Date(data.start_date);
+            console.log(startTime);
+            // add with duration 1 & 2
+            let endTime = new Date( 
+                +startTime 
+                + data.duration[0]
+                + data.duration[1]
+            );
+            console.log(endTime);
+            // compare with current time
+            if(+endTime <= +serverTime) {
+                console.log("TRIGGER ALARM");
+                this.enable({
+                    oven: data.furnace,
+                    text: "Annealing time reached!"
+                });
+            } else {
+                setTimeout(() => {
+                    this.eventListener.emit("API:GET UNFINISHED ANNEALING");
+                }, 5000);
+            }
+        });
+    },
+
+    handleAPI() {
+        this.eventListener.subscribe("API:GET UNFINISHED ANNEALING", async () => {
+            console.log("GET UNFINISHED ANNEALING");
+            let res = await fetch(API_LINK + '/document?unfinished=true');
+            if(res.ok) {
+                this.eventListener.emit("API:PARSE GET UNFINISHED", res);
+            } else {
+                let err = await res.json();
+                this.eventListener.emit("ERROR", err.error);
+            }
+        });
+
+        this.eventListener.subscribe("API:SET ISFINISHED", async () => {
+            console.log("SET ISFINISHED ANNEALING");
+            let data = {
+                id: this.doc._id,
+                isFinish: true,
+            }
+            let res = await fetch(API_LINK + '/document', {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json;charset=utf-8'
+                },
+                body: JSON.stringify(data)
+            });
+            if(res.ok) {
+                this.disable();
+                this.eventListener.emit("API:GET UNFINISHED ANNEALING");
+            } else {
+                let err = await res.json();
+                this.eventListener.emit("ERROR", err.error);
+            }
+        });
+
+        this.eventListener.subscribe("API:PARSE GET UNFINISHED", async (data) => {
+            res = await data.json();
+            console.log(res);
+
+            if(res.payload.length>0) {
+                let rp = res.payload
+                rp.sort((a,b) => {
+                    let A_startTime = new Date(a.start_date);
+                    let B_startTime = new Date(b.start_date);
+                    let A_endTime = +A_startTime 
+                        + a.duration[0]
+                        + a.duration[1];
+                    let B_endTime = +B_startTime 
+                        + b.duration[0]
+                        + b.duration[1];
+                    return A_endTime - B_endTime;
+                });
+                rp[0].server_time = res.server_time;
+                this.eventListener.emit("UI:SET ALARM", res.payload[0]);
+            } else {
+                setTimeout(() => {
+                    this.eventListener.emit("API:GET UNFINISHED ANNEALING");
+                }, 5000);
+            }
+        });
+    },
+
+    handleError() {
+        this.eventListener.subscribe("ERROR", (e) => {
+            console.error(e);
+            this.errorViewer.set(e);
+        })
+    },
+
+}
+
+
 let Devices = {
 
     fetchResult : null,
@@ -305,5 +491,8 @@ document.addEventListener("DOMContentLoaded", async () => {
     if(urlParamsHideDoc) {
         document.querySelector(".addition").style.display = "none";
     }
+
+    // alarm
+    TimeAlarm.init();
 
 });
