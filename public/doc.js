@@ -626,11 +626,15 @@ AddDocument = {
     linkHandle() {
 
         this.eventListener.subscribe("LINK:GO DEVICE", () => {
-            let url = new URL(location);
-            let query = new URLSearchParams(url.search);
-            url.pathname = '/device.html';
-            url.search = `id=${query.get('id')}`;
-            location = url;
+            if(query.get('id')) {
+                let url = new URL(location);
+                let query = new URLSearchParams(url.search);
+                url.pathname = '/device.html';
+                url.search = `id=${query.get('id')}`;
+                location = url;
+            } else {
+                this.eventListener.emit("LINK:GO HOME");
+            }
         });
 
         this.eventListener.subscribe("LINK:GO HOME", () => {
