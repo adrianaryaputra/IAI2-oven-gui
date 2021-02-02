@@ -626,9 +626,9 @@ AddDocument = {
     linkHandle() {
 
         this.eventListener.subscribe("LINK:GO DEVICE", () => {
+            let url = new URL(location);
+            let query = new URLSearchParams(url.search);
             if(query.get('id')) {
-                let url = new URL(location);
-                let query = new URLSearchParams(url.search);
                 url.pathname = '/device.html';
                 url.search = `id=${query.get('id')}`;
                 location = url;
