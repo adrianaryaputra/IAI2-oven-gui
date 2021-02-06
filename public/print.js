@@ -510,7 +510,7 @@ function load2weight(load) {
         return acc + cur.weight
     }, 0)
     console.log(red);
-    return red;
+    return red.toFixed(2);
 }
 
 
