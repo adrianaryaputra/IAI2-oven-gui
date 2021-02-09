@@ -53,7 +53,7 @@ class Device {
         if(data.id) this.id = data.id;
         if(data.name) this.value.name = data.name;
         if(data.temperature) data.temperature.forEach((t,idx) => {
-            if(t>=999 || t<10){
+            if(t>=9999 || t<0){
                 this.value.temperature[idx] = NaN;
             } else {
                 this.value.temperature[idx] = t;
